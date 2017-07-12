@@ -12,6 +12,6 @@
     <tags>.NET R-Tree Algorithm tree search spatial index</tags>
   </metadata>
   <files>
-    <file src="bin\Release\RBush.dll" target="lib\netstandard1.2" />
+    <file src="bin\Release\netstandard1.2\RBush.dll" target="lib\netstandard1.2" />
   </files>
 </package>
