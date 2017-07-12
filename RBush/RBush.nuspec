@@ -1,0 +1,17 @@
+﻿<?xml version="1.0"?>
+<package >
+  <metadata>
+    <id>RBush</id>
+    <version>$version$</version>
+    <authors>Stuart Turner</authors>
+    <licenseUrl>https://github.com/viceroypenguin/RBush/blob/master/LICENSE</licenseUrl>
+    <projectUrl>https://github.com/viceroypenguin/RBush</projectUrl>
+    <requireLicenseAcceptance>false</requireLicenseAcceptance>
+    <description>Spatial Index data structure; used to make it easier to find data points on a two dimensional plane.</description>
+    <copyright>Copyright 2017 Turning Code, LLC</copyright>
+    <tags>.NET R-Tree Algorithm tree search spatial index</tags>
+  </metadata>
+  <files>
+    <file src="bin\Release\RBush.dll" target="lib\netstandard1.2" />
+  </files>
+</package>

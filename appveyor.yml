@@ -2,6 +2,12 @@ version: '1.0.{build}'
 image: Visual Studio 2017
 clone_depth: 1
 
+assembly_info:
+    patch: true
+    file: AssemblyInfo.*
+    assembly_version: "{version}"
+    assembly_file_version: "{version}"
+  
 before_build:
     - cmd: dotnet --version
     - cmd: dotnet restore --verbosity m
@@ -12,4 +18,22 @@ build_script:
 test_script:
     - cmd: cd RBush.Test
     - cmd: dotnet xunit
+
+after_test:
+    - cmd: nuget pack ./RBush/RBush.nuspec -version %appveyor_build_version%
+
+artifacts:
+  - path: RBush\bin\Release\RBush.dll
+    name: RBush.dll
+  - path: '**\*.nupkg'
+
+cache:
+  - packages -> **\packages.config  # preserve "packages" directory in the root of build folder but will reset it if packages.config is modified
+  - '%LocalAppData%\NuGet\Cache'    # NuGet < v3
+  - '%LocalAppData%\NuGet\v3-cache  # NuGet v3
+
+#-
+#    branches:
+#        only:
+#        - master
 
