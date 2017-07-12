@@ -6,6 +6,7 @@ namespace RBush
 	{
 		void Insert(T item);
 		void Delete(T item);
+		void Clear();
 
 		void BulkLoad(IEnumerable<T> items);
 	}
