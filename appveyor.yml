@@ -32,14 +32,11 @@ cache:
   - '%LocalAppData%\NuGet\Cache'    # NuGet < v3
   - '%LocalAppData%\NuGet\v3-cache' # NuGet v3
 
--
-    branches:
-        only:
-        - master
-
-    deploy:
-        provider: NuGet
-        api_key:
-            secure: lGI6OxVnMUoqVp/LUY35aCtJ5ty8ByQAVDasWeoLiKjQWp5VRhK5ORqaD2ZMAmK5
-        skip_symbols: true
-        artifact: '**\*.nupkg'
+deploy:
+    provider: NuGet
+    api_key:
+        secure: lGI6OxVnMUoqVp/LUY35aCtJ5ty8ByQAVDasWeoLiKjQWp5VRhK5ORqaD2ZMAmK5
+    skip_symbols: true
+    artifact: '**\*.nupkg'
+    on: 
+        branch: master
