@@ -18,6 +18,7 @@ build_script:
 test_script:
     - cmd: cd RBush.Test
     - cmd: dotnet xunit
+    - cmd: cd ..
 
 after_test:
     - cmd: nuget pack ./RBush/RBush.nuspec -version %appveyor_build_version%
