@@ -5,7 +5,12 @@ VisualStudioVersion = 15.0.26430.15
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "RBush", "RBush\RBush.csproj", "{24061D07-5EFA-4D72-9617-0C6671280FDF}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RBush.Test", "RBush.Test\RBush.Test.csproj", "{3147FD81-3D97-45DB-A8C8-9419FEB0C5C4}"
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{6EA781FE-7457-4266-93E4-6C2751DCB4CF}"
+	ProjectSection(SolutionItems) = preProject
+		README.md = README.md
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RBush.Test", "RBush.Test\RBush.Test.csproj", "{C2CDDC6C-046F-44C1-86F5-9FA742133895}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +22,10 @@ Global
 		{24061D07-5EFA-4D72-9617-0C6671280FDF}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{24061D07-5EFA-4D72-9617-0C6671280FDF}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{24061D07-5EFA-4D72-9617-0C6671280FDF}.Release|Any CPU.Build.0 = Release|Any CPU
-		{3147FD81-3D97-45DB-A8C8-9419FEB0C5C4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{3147FD81-3D97-45DB-A8C8-9419FEB0C5C4}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{3147FD81-3D97-45DB-A8C8-9419FEB0C5C4}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{3147FD81-3D97-45DB-A8C8-9419FEB0C5C4}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C2CDDC6C-046F-44C1-86F5-9FA742133895}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C2CDDC6C-046F-44C1-86F5-9FA742133895}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C2CDDC6C-046F-44C1-86F5-9FA742133895}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C2CDDC6C-046F-44C1-86F5-9FA742133895}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
