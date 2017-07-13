@@ -2,9 +2,9 @@
 
 namespace RBush
 {
-	public interface ISpatialIndex<T>
+	public interface ISpatialIndex<out T>
 	{
-		IEnumerable<T> Search();
-		IEnumerable<T> Search(Envelope boundingBox);
+		IReadOnlyList<T> Search();
+		IReadOnlyList<T> Search(Envelope boundingBox);
 	}
 }

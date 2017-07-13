@@ -35,11 +35,11 @@ namespace RBush
 			this.Count = 0;
 		}
 
-		public IEnumerable<T> Search() => GetAllChildren(this.root);
+		public IReadOnlyList<T> Search() => GetAllChildren(this.root).ToList();
 
-		public IEnumerable<T> Search(Envelope boundingBox)
+		public IReadOnlyList<T> Search(Envelope boundingBox)
 		{
-			return DoSearch(boundingBox).Select(x => (T)x.Peek());
+			return DoSearch(boundingBox).Select(x => (T)x.Peek()).ToList();
 		}
 
 		public void Insert(T item)
