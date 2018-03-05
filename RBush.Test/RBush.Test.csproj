@@ -2,6 +2,7 @@
 
   <PropertyGroup>    
     <TargetFrameworks>netcoreapp1.1;net452</TargetFrameworks>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <Import Project="..\RBush.Common.Props" />

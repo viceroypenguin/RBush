@@ -37,7 +37,7 @@ namespace RBush
 
 		public IReadOnlyList<T> Search() => GetAllChildren(this.root).ToList();
 
-		public IReadOnlyList<T> Search(Envelope boundingBox)
+		public IReadOnlyList<T> Search(in Envelope boundingBox)
 		{
 			return DoSearch(boundingBox).Select(x => (T)x.Peek()).ToList();
 		}
