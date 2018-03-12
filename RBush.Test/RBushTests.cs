@@ -10,7 +10,18 @@ namespace RBush.Test
 	{
 		private class Point : ISpatialData, IComparable<Point>
 		{
-			public Envelope Envelope { get; set; }
+			private Envelope _envelope;
+
+			public Point(double minX, double minY, double maxX, double maxY)
+			{
+				_envelope = new Envelope(
+					minX: minX,
+					minY: minY,
+					maxX: maxX,
+					maxY: maxY);
+			}
+
+			public ref readonly Envelope Envelope => ref _envelope;
 
 			public int CompareTo(Point other)
 			{
@@ -26,7 +37,7 @@ namespace RBush.Test
 			}
 		}
 
-		static double[,] data =
+		private static double[,] data =
 		{
 			{0, 0, 0, 0},{10, 10, 10, 10},{20, 20, 20, 20},{25, 0, 25, 0},{35, 10, 35, 10},{45, 20, 45, 20},{0, 25, 0, 25},{10, 35, 10, 35},
 			{20, 45, 20, 45},{25, 25, 25, 25},{35, 35, 35, 35},{45, 45, 45, 45},{50, 0, 50, 0},{60, 10, 60, 10},{70, 20, 70, 20},{75, 0, 75, 0},
@@ -38,30 +49,20 @@ namespace RBush.Test
 
 		static Point[] points =
 			Enumerable.Range(0, data.GetLength(0))
-				.Select(i => new Point
-				{
-					Envelope = new Envelope
-					{
-						MinX = data[i, 0],
-						MinY = data[i, 1],
-						MaxX = data[i, 2],
-						MaxY = data[i, 3],
-					},
-				})
+				.Select(i => new Point(
+					minX: data[i, 0],
+					minY: data[i, 1],
+					maxX: data[i, 2],
+					maxY: data[i, 3]))
 				.ToArray();
 
 		private List<Point> GetPoints(int cnt) =>
 			Enumerable.Range(0, cnt)
-				.Select(i => new Point
-				{
-					Envelope = new Envelope
-					{
-						MinX = i,
-						MinY = i,
-						MaxX = i,
-						MaxY = i,
-					},
-				})
+				.Select(i => new Point(
+					minX: i,
+					minY: i,
+					maxX: i,
+					maxY: i))
 				.ToList();
 
 		[Fact]
@@ -152,7 +153,7 @@ namespace RBush.Test
 			var tree = new RBush<Point>(maxEntries: 4);
 			tree.BulkLoad(points);
 
-			Assert.Equal(new Point[] { }, tree.Search(new Envelope { MinX = 200, MinY = 200, MaxX = 210, MaxY = 210 }));
+			Assert.Equal(new Point[] { }, tree.Search(new Envelope(200, 200, 210, 210)));
 		}
 
 		[Fact]
@@ -161,7 +162,7 @@ namespace RBush.Test
 			var tree = new RBush<Point>(maxEntries: 4);
 			tree.BulkLoad(points);
 
-			var searchEnvelope = new Envelope { MinX = 40, MinY = 20, MaxX = 80, MaxY = 70 };
+			var searchEnvelope = new Envelope(40, 20, 80, 70);
 			var shouldFindPoints = points
 				.Where(p => p.Envelope.Intersects(searchEnvelope))
 				.OrderBy(x => x)
@@ -206,16 +207,7 @@ namespace RBush.Test
 			var tree = new RBush<Point>(maxEntries: 4);
 			tree.BulkLoad(points);
 
-			tree.Delete(new Point
-			{
-				Envelope = new Envelope
-				{
-					MinX = 13,
-					MinY = 13,
-					MaxX = 13,
-					MaxY = 13,
-				},
-			});
+			tree.Delete(new Point(13, 13, 13, 13));
 		}
 
 		[Fact]

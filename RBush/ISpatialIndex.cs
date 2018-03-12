@@ -5,6 +5,6 @@ namespace RBush
 	public interface ISpatialIndex<out T>
 	{
 		IReadOnlyList<T> Search();
-		IReadOnlyList<T> Search(Envelope boundingBox);
+		IReadOnlyList<T> Search(in Envelope boundingBox);
 	}
 }

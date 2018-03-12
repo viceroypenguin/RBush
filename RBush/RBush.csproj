@@ -3,6 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netstandard1.2</TargetFramework>
     <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
+    <LangVersion>latest</LangVersion>
   </PropertyGroup>
 
   <Import Project="..\RBush.Common.Props" />

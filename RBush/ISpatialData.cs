@@ -2,6 +2,6 @@
 {
 	public interface ISpatialData
 	{
-		Envelope Envelope { get; }
+		ref readonly Envelope Envelope { get; }
 	}
 }

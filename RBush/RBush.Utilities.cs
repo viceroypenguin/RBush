@@ -16,7 +16,7 @@ namespace RBush
 		#endregion
 
 		#region Search
-		private List<ImmutableStack<ISpatialData>> DoSearch(Envelope boundingBox)
+		private List<ImmutableStack<ISpatialData>> DoSearch(in Envelope boundingBox)
 		{
 			var node = this.root;
 			if (!node.Envelope.Intersects(boundingBox))
@@ -46,10 +46,11 @@ namespace RBush
 		#endregion
 
 		#region Insert
-		private List<Node> FindCoveringArea(Envelope area, int depth)
+		private List<Node> FindCoveringArea(in Envelope area, int depth)
 		{
 			var path = new List<Node>();
 			var node = this.root;
+			var _area = area; //FIX CS1628
 
 			while (true)
 			{
@@ -57,7 +58,7 @@ namespace RBush
 				if (node.IsLeaf || path.Count == depth) return path;
 
 				node = node.Children
-					.Select(c => new { EnlargedArea = c.Envelope.Enlargement(area).Area, c.Envelope.Area, Node = c as Node, })
+					.Select(c => new { EnlargedArea = c.Envelope.Enlargement(_area).Area, c.Envelope.Area, Node = c as Node, })
 					.OrderBy(x => x.EnlargedArea)
 					.ThenBy(x => x.Area)
 					.Select(x => x.Node)
@@ -67,8 +68,7 @@ namespace RBush
 
 		private void Insert(ISpatialData data, int depth)
 		{
-			var envelope = data.Envelope;
-			var path = FindCoveringArea(envelope, depth);
+			var path = FindCoveringArea(data.Envelope, depth);
 
 			var insertNode = path.Last();
 			insertNode.Add(data);
@@ -119,12 +119,14 @@ namespace RBush
 			var envelope = Envelope.EmptyBounds;
 			int i = 0;
 			for (; i < minEntries; i++)
-				envelope.Extend(children[i].Envelope);
+			{
+				envelope = envelope.Extend(children[i].Envelope);
+			}
 
 			var totalMargin = envelope.Margin;
 			for (; i < children.Count - minEntries; i++)
 			{
-				envelope.Extend(children[i].Envelope);
+				envelope = envelope.Extend(children[i].Envelope);
 				totalMargin += envelope.Margin;
 			}
 
@@ -205,7 +207,9 @@ namespace RBush
 		{
 			var envelope = Envelope.EmptyBounds;
 			foreach (var data in items)
-				envelope.Extend(data.Envelope);
+			{
+				envelope = envelope.Extend(data.Envelope);
+			}
 			return envelope;
 		}
 
@@ -214,7 +218,7 @@ namespace RBush
 			if (n.IsLeaf)
 				return n.Children.Cast<T>();
 			else
-				return n.Children.Cast<Node>().SelectMany(c => GetAllChildren(c));
+				return n.Children.Cast<Node>().SelectMany(GetAllChildren);
 		}
 
 	}

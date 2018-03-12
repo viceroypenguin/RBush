@@ -8,6 +8,8 @@ namespace RBush
 	{
 		internal class Node : ISpatialData
 		{
+			private Envelope _envelope;
+
 			public Node(List<ISpatialData> items, int height)
 			{
 				this.Height = height;
@@ -18,18 +20,18 @@ namespace RBush
 			public void Add(ISpatialData node)
 			{
 				Children.Add(node);
-				Envelope.Extend(node.Envelope);
+				_envelope = Envelope.Extend(node.Envelope);
 			}
 
 			public void ResetEnvelope()
 			{
-				Envelope = GetEnclosingEnvelope(Children);
+				_envelope = GetEnclosingEnvelope(Children);
 			}
 
-			public List<ISpatialData> Children { get; set; } 
-			public int Height { get; set; }
+			public List<ISpatialData> Children { get; }
+			public int Height { get; }
 			public bool IsLeaf => Height == 1;
-			public Envelope Envelope { get; set; }
+			public ref readonly Envelope Envelope => ref _envelope;
 		}
 	}
 }
