@@ -73,14 +73,18 @@ namespace RBush
 			var insertNode = path.Last();
 			insertNode.Add(data);
 
-			while (--depth >= 0 &&
-				path[depth].Children.Count > maxEntries)
+			while (--depth >= 0)
 			{
-				var newNode = SplitNode(path[depth]);
-				if (depth == 0)
-					SplitRoot(newNode);
+				if (path[depth].Children.Count > maxEntries)
+				{
+					var newNode = SplitNode(path[depth]);
+					if (depth == 0)
+						SplitRoot(newNode);
+					else
+						path[depth - 1].Add(newNode);
+				}
 				else
-					path[depth - 1].Add(newNode);
+					path[depth].ResetEnvelope();
 			}
 		}
 
