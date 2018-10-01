@@ -6,7 +6,7 @@ namespace RBush
 {
 	public partial class RBush<T>
 	{
-		internal class Node : ISpatialData
+		public class Node : ISpatialData
 		{
 			private Envelope _envelope;
 

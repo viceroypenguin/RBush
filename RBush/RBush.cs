@@ -16,6 +16,8 @@ namespace RBush
 		private int minEntries;
 		internal Node root;
 
+		public Node Root { get { return root; } }
+
 		public RBush() : this(DefaultMaxEntries) { }
 		public RBush(int maxEntries)
 			: this(maxEntries, EqualityComparer<T>.Default) { }
