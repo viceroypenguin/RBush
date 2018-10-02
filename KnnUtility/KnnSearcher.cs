@@ -10,16 +10,10 @@ namespace KnnUtility
 	/// <summary>
 	/// Adapted from a Javascript library https://github.com/mourner/rbush-knn/blob/master/index.js
 	/// </summary>
-	public class KnnSearcher<T> where T : ISpatialData
+	public static class KnnSearcher
 	{
-		private RBush<T> tree;
-		public KnnSearcher(RBush<T> tree)
-		{
-			this.tree = tree;
-		}
-
-		public IEnumerable<T> KnnSearch(double x, double y, int n,
-			Func<T, bool> predicate = null, double maxDist = -1)
+		public static IEnumerable<T> KnnSearch<T>(this RBush<T> tree, double x, double y, int n,
+			Func<T, bool> predicate = null, double maxDist = -1) where T : ISpatialData
 		{
 			if (maxDist > 0)
 				maxDist = maxDist * maxDist;//All distances are quadratic!!!
