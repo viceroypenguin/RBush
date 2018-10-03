@@ -33,13 +33,27 @@ namespace KnnUtility.Test
 				{
 					_envelope = new Envelope
 					(
-						minX : data[i, 0],
-						minY : data[i, 1],
-						maxX : data[i, 2],
-						maxY : data[i, 3]
+						minX: data[i, 0],
+						minY: data[i, 1],
+						maxX: data[i, 2],
+						maxY: data[i, 3]
 					)
 				})
 				.ToArray();
+		}
+
+		public static Box CreateBox(double[] data)
+		{
+			return new Box
+			{
+				_envelope = new Envelope
+					(
+						minX: data[0],
+						minY: data[1],
+						maxX: data[2],
+						maxY: data[3]
+					)
+			};
 		}
 	}
 }

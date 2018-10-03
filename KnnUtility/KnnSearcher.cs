@@ -12,8 +12,23 @@ namespace KnnUtility
 	/// </summary>
 	public static class KnnSearcher
 	{
-		public static IEnumerable<T> KnnSearch<T>(this RBush<T> tree, double x, double y, int n,
-			Func<T, bool> predicate = null, double maxDist = -1) where T : ISpatialData
+		/// <summary>
+		/// Search k nearest neighbors to given point or to to given line segment
+		/// </summary>
+		/// <typeparam name="T">type of RBush items</typeparam>
+		/// <param name="tree">RBush object</param>
+		/// <param name="x1">x coordinate of query point.
+		/// Or if x2 and y2 not null, x coordinate of first endpoint of query line segment</param>
+		/// <param name="y1">y coordinate of query point.
+		/// Or if x2 and y2 not null, y coordinate of first endpoint of query line segment</param>
+		/// <param name="n">number of nearest neighbors to get</param>
+		/// <param name="predicate">condition for neighbors</param>
+		/// <param name="maxDist">max distance for nearest neighbors</param>
+		/// <param name="x2">if not null is x coordinate of second endpoint of query line segment</param>
+		/// <param name="y2">if not null is y coordinate of second endpoint of query line segment</param>
+		/// <returns></returns>
+		public static IEnumerable<T> KnnSearch<T>(this RBush<T> tree, double x1, double y1, int n,
+			Func<T, bool> predicate = null, double maxDist = -1, double? x2 = null, double? y2 = null) where T : ISpatialData
 		{
 			if (maxDist > 0)
 				maxDist = maxDist * maxDist;//All distances are quadratic!!!
@@ -29,8 +44,8 @@ namespace KnnUtility
 			{
 				foreach (ISpatialData child in node.Children)//for each child
 				{
-					SpatialDataWrapper childDistData = new SpatialDataWrapper(child, x, y);//calc distance to box
-					if (maxDist < 0 || childDistData.DistanceToBox <= maxDist)//check if distance less than max distance
+					SpatialDataWrapper childDistData = new SpatialDataWrapper(child, x1, y1, x2, y2);//calc distance to box
+					if (maxDist < 0 || childDistData.SquaredDistanceToBox <= maxDist)//check if distance less than max distance
 					{
 						queue.Add(childDistData);//add to queue
 					}
@@ -65,38 +80,6 @@ namespace KnnUtility
 			return result;
 		}
 
-		/// <summary>
-		/// Wrapper for ISpatialData storing distance to query point
-		/// </summary>
-		private class SpatialDataWrapper
-		{
-			public ISpatialData SpatialData { get; private set; }
-
-			/// <summary>
-			/// Distance to box is quadratic!!!
-			/// </summary>
-			public double DistanceToBox { get; private set; }
-
-
-			public SpatialDataWrapper(ISpatialData spatialData, double x, double y)
-			{
-				SpatialData = spatialData;
-				CalcBoxDist(x, y);
-			}
-
-			private void CalcBoxDist(double x, double y)
-			{
-				double dx = AxisDist(x, SpatialData.Envelope.MinX, SpatialData.Envelope.MaxX);
-				double dy = AxisDist(y, SpatialData.Envelope.MinY, SpatialData.Envelope.MaxY);
-				DistanceToBox = dx * dx + dy * dy;//Distance to box is quadratic!!!
-			}
-
-			private double AxisDist(double k, double min, double max)
-			{
-				return k < min ? min - k : k <= max ? 0 : k - max;
-			}
-		}
-
 
 
 		private class DistComparer : IComparer<SpatialDataWrapper>
@@ -106,7 +89,7 @@ namespace KnnUtility
 				//TODO?: Если расстояния до прямоугольника равны нулю
 				//(точка попала внутрь двух прямоугольников),
 				//то сравнивать по расстоянию до центральной точки прямоугольника
-				return n1.DistanceToBox.CompareTo(n2.DistanceToBox);
+				return n1.SquaredDistanceToBox.CompareTo(n2.SquaredDistanceToBox);
 			}
 
 		}

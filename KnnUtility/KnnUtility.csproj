@@ -45,6 +45,7 @@
   <ItemGroup>
     <Compile Include="KnnSearcher.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpatialDataWrapper.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\RBush\RBush.csproj">

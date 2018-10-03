@@ -51,8 +51,10 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Box.cs" />
-    <Compile Include="KnnUtilityTests.cs" />
+    <Compile Include="LineKnnTests.cs" />
+    <Compile Include="PointKnnUtilityTests.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="SpatialDataWrapperTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />

@@ -8,7 +8,7 @@ using System.Linq;
 namespace KnnUtility.Test
 {
 	[TestClass]
-	public class KnnUtilityTests
+	public class PointKnnUtilityTests
 	{
 		static double[,] data =
 		{
@@ -143,7 +143,7 @@ namespace KnnUtility.Test
 			= Box.CreateBoxes((new double[,] { { 1, 2, 1, 2 }, { 3, 3, 3, 3 }, { 5, 5, 5, 5 },
 				{ 4, 2, 4, 2 }, { 2, 4, 2, 4 }, { 5, 3, 5, 3 } }));
 
-		static KnnUtilityTests()
+		static PointKnnUtilityTests()
 		{
 			for (int i = 0; i < richData.Length; i++)
 			{
