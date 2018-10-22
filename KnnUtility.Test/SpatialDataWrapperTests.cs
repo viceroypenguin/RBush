@@ -1,6 +1,7 @@
 ﻿using System;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RBush;
+using RBush.KnnUtility;
 using KnnUtility;
 
 

@@ -8,7 +8,7 @@ using System.Runtime.CompilerServices;
 
 [assembly: InternalsVisibleTo("KnnUtility.Test")]
 
-namespace KnnUtility
+namespace RBush.KnnUtility
 {
 	/// <summary>
 	/// Wrapper for ISpatialData storing distance to query point

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using Microsoft.VisualStudio.TestTools.UnitTesting;
 using RBush;
+using RBush.KnnUtility;
 using KnnUtility;
 using System.Linq;
 

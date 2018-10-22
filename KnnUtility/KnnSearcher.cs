@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using RBush;
 
-namespace KnnUtility
+namespace RBush.KnnUtility
 {
 	/// <summary>
 	/// Adapted from a Javascript library https://github.com/mourner/rbush-knn/blob/master/index.js
@@ -27,7 +27,7 @@ namespace KnnUtility
 		/// <param name="x2">if not null is x coordinate of second endpoint of query line segment</param>
 		/// <param name="y2">if not null is y coordinate of second endpoint of query line segment</param>
 		/// <returns></returns>
-		public static IEnumerable<T> KnnSearch<T>(this RBush<T> tree, double x1, double y1, int n,
+		public static IReadOnlyList<T> KnnSearch<T>(this RBush<T> tree, double x1, double y1, int n,
 			Func<T, bool> predicate = null, double maxDist = -1, double? x2 = null, double? y2 = null) where T : ISpatialData
 		{
 			if (maxDist > 0)
