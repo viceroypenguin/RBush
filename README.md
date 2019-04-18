@@ -44,12 +44,12 @@ Insert an item:
 var item = new Point
 {
     Envelope = new Envelope
-    {
-        MinX = 0,
-        MinY = 0,
-        MaxX = 0,
-        MaxY = 0,
-    },
+    (
+        minX = 0,
+        minY = 0,
+        maxX = 0,
+        maxY = 0,
+    ),
 };
 tree.Insert(item);
 ```
@@ -97,12 +97,12 @@ but makes query performance worse if the data is scattered.
 ```csharp
 var result = tree.Search(
     new Envelope
-    {
-        MinX: 40,
-        MinY: 20,
-        MaxX: 80,
-        MaxY: 70
-    });
+    (
+        minX: 40,
+        minY: 20,
+        maxX: 80,
+        maxY: 70
+    );
 ```
 
 Returns an `IEnumerable<T>` of data items (points or rectangles) that the given bounding box intersects.
@@ -112,27 +112,6 @@ var allItems = tree.Search();
 ```
 
 Returns all items of the tree.
-
-<!--## Performance
-
-The following sample performance test was done by generating
-random uniformly distributed rectangles of ~0.01% area and setting `maxEntries` to `16`
-(see `debug/perf.js` script).
-Performed with Node.js v6.2.2 on a Retina Macbook Pro 15 (mid-2012).
-
-Test                         | RBush  | [old RTree](https://github.com/imbcmdth/RTree) | Improvement
----------------------------- | ------ | ------ | ----
-insert 1M items one by one   | 3.18s  | 7.83s  | 2.5x
-1000 searches of 0.01% area  | 0.03s  | 0.93s  | 30x
-1000 searches of 1% area     | 0.35s  | 2.27s  | 6.5x
-1000 searches of 10% area    | 2.18s  | 9.53s  | 4.4x
-remove 1000 items one by one | 0.02s  | 1.18s  | 50x
-bulk-insert 1M items         | 1.25s  | n/a    | 6.7x
-
-If you're indexing a static list of points (you don't need to add/remove points after indexing), 
-you should use [kdbush](https://github.com/mourner/kdbush) which performs point indexing 5-8x 
-faster than RBush.
--->
 
 ## Credit
 
