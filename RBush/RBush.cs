@@ -17,6 +17,7 @@ namespace RBush
 		private readonly int minEntries;
 
 		public Node Root { get; private set; }
+		public ref readonly Envelope Envelope => ref Root.Envelope;
 
 		public RBush() : this(DefaultMaxEntries) { }
 		public RBush(int maxEntries)
@@ -81,7 +82,7 @@ namespace RBush
 				if (this.Root.children.Count + dataRoot.children.Count <= this.maxEntries)
 				{
 					foreach (var isd in dataRoot.children)
-						this.Root.Add(dataRoot);
+						this.Root.Add(isd);
 				}
 				else
 					SplitRoot(dataRoot);
@@ -116,8 +117,13 @@ namespace RBush
 				Count--;
 				while (!path.IsEmpty)
 				{
-					(path.Peek() as Node).ResetEnvelope();
-					path = path.Pop();
+					path = path.Pop(out var e);
+					var n = e as Node;
+
+					if (n.children.Count != 0)
+						n.ResetEnvelope();
+					else
+						(path.Peek() as Node).Remove(n);
 				}
 			}
 		}

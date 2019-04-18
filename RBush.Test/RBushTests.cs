@@ -8,9 +8,9 @@ namespace RBush.Test
 {
 	public class RBushTests
 	{
-		private class Point : ISpatialData, IComparable<Point>
+		private class Point : ISpatialData, IComparable<Point>, IEquatable<Point>
 		{
-			private Envelope _envelope;
+			private readonly Envelope _envelope;
 
 			public Point(double minX, double minY, double maxX, double maxY)
 			{
@@ -35,19 +35,22 @@ namespace RBush.Test
 					return this.Envelope.MaxY.CompareTo(other.Envelope.MaxY);
 				return 0;
 			}
+
+			public bool Equals(Point other) =>
+				this._envelope == other._envelope;
 		}
 
-		private static double[,] data =
+		private static readonly double[,] data =
 		{
-			{0, 0, 0, 0},{10, 10, 10, 10},{20, 20, 20, 20},{25, 0, 25, 0},{35, 10, 35, 10},{45, 20, 45, 20},{0, 25, 0, 25},{10, 35, 10, 35},
-			{20, 45, 20, 45},{25, 25, 25, 25},{35, 35, 35, 35},{45, 45, 45, 45},{50, 0, 50, 0},{60, 10, 60, 10},{70, 20, 70, 20},{75, 0, 75, 0},
-			{85, 10, 85, 10},{95, 20, 95, 20},{50, 25, 50, 25},{60, 35, 60, 35},{70, 45, 70, 45},{75, 25, 75, 25},{85, 35, 85, 35},{95, 45, 95, 45},
-			{0, 50, 0, 50},{10, 60, 10, 60},{20, 70, 20, 70},{25, 50, 25, 50},{35, 60, 35, 60},{45, 70, 45, 70},{0, 75, 0, 75},{10, 85, 10, 85},
-			{20, 95, 20, 95},{25, 75, 25, 75},{35, 85, 35, 85},{45, 95, 45, 95},{50, 50, 50, 50},{60, 60, 60, 60},{70, 70, 70, 70},{75, 50, 75, 50},
-			{85, 60, 85, 60},{95, 70, 95, 70},{50, 75, 50, 75},{60, 85, 60, 85},{70, 95, 70, 95},{75, 75, 75, 75},{85, 85, 85, 85},{95, 95, 95, 95}
+			{0, 0, 0, 0},       {10, 10, 10, 10},   {20, 20, 20, 20},   {25, 0, 25, 0},     {35, 10, 35, 10},   {45, 20, 45, 20},   {0, 25, 0, 25},     {10, 35, 10, 35},
+			{20, 45, 20, 45},   {25, 25, 25, 25},   {35, 35, 35, 35},   {45, 45, 45, 45},   {50, 0, 50, 0},     {60, 10, 60, 10},   {70, 20, 70, 20},   {75, 0, 75, 0},
+			{85, 10, 85, 10},   {95, 20, 95, 20},   {50, 25, 50, 25},   {60, 35, 60, 35},   {70, 45, 70, 45},   {75, 25, 75, 25},   {85, 35, 85, 35},   {95, 45, 95, 45},
+			{0, 50, 0, 50},     {10, 60, 10, 60},   {20, 70, 20, 70},   {25, 50, 25, 50},   {35, 60, 35, 60},   {45, 70, 45, 70},   {0, 75, 0, 75},     {10, 85, 10, 85},
+			{20, 95, 20, 95},   {25, 75, 25, 75},   {35, 85, 35, 85},   {45, 95, 45, 95},   {50, 50, 50, 50},   {60, 60, 60, 60},   {70, 70, 70, 70},   {75, 50, 75, 50},
+			{85, 60, 85, 60},   {95, 70, 95, 70},   {50, 75, 50, 75},   {60, 85, 60, 85},   {70, 95, 70, 95},   {75, 75, 75, 75},   {85, 85, 85, 85},   {95, 95, 95, 95}
 		};
 
-		static Point[] points =
+		private static readonly Point[] points =
 			Enumerable.Range(0, data.GetLength(0))
 				.Select(i => new Point(
 					minX: data[i, 0],
@@ -104,6 +107,10 @@ namespace RBush.Test
 
 			Assert.Equal(points.Length, tree.Count);
 			Assert.Equal(points.OrderBy(x => x), tree.Search().OrderBy(x => x));
+
+			Assert.Equal(
+				points.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope)),
+				tree.Envelope);
 		}
 
 		[Fact]
@@ -200,6 +207,9 @@ namespace RBush.Test
 
 			Assert.Equal(shouldFindPoints, foundPoints);
 			Assert.Equal(shouldFindPoints.Count, tree.Count);
+			Assert.Equal(
+				shouldFindPoints.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope)),
+				tree.Envelope);
 		}
 
 		[Fact]
@@ -209,6 +219,7 @@ namespace RBush.Test
 			tree.BulkLoad(points);
 
 			tree.Delete(new Point(13, 13, 13, 13));
+			Assert.Equal(points.Length, tree.Count);
 		}
 
 		[Fact]
@@ -222,7 +233,163 @@ namespace RBush.Test
 			Assert.Empty(tree.Root.children);
 		}
 
-		private List<Point> missingEnvelopeTestData = new List<Point>
+		[Fact]
+		public void TestSearchAfterInsert()
+		{
+			var maxEntries = 9;
+			var tree = new RBush<Point>(maxEntries);
+
+			var firstSet = points.Take(maxEntries);
+			var firstSetEnvelope =
+				firstSet.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
+
+			foreach (var p in firstSet)
+				tree.Insert(p);
+
+			Assert.Equal(firstSet.OrderBy(x => x), tree.Search(firstSetEnvelope).OrderBy(x => x));
+		}
+
+		[Fact]
+		public void TestSearchAfterInsertWithSplitRoot()
+		{
+			var maxEntries = 4;
+			var tree = new RBush<Point>(maxEntries);
+
+			var numFirstSet = maxEntries * maxEntries + 2;  // Split-root will occur twice.
+			var firstSet = points.Take(numFirstSet);
+
+			foreach (var p in firstSet)
+				tree.Insert(p);
+
+			var numExtraPoints = 5;
+			var extraPointsSet = points.Skip(points.Length - numExtraPoints);
+			var extraPointsSetEnvelope =
+				extraPointsSet.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
+
+			foreach (var p in extraPointsSet)
+				tree.Insert(p);
+
+			// first 10 entries and last 5 entries are completely mutually exclusive
+			// so searching the bounds of the new set should only return the new set exactly
+			Assert.Equal(extraPointsSet.OrderBy(x => x), tree.Search(extraPointsSetEnvelope).OrderBy(x => x));
+		}
+
+		[Fact]
+		public void TestSearchAfterBulkLoadWithSplitRoot()
+		{
+			var maxEntries = 4;
+			var tree = new RBush<Point>(maxEntries);
+
+			var numFirstSet = maxEntries * maxEntries + 2;  // Split-root will occur twice.
+			var firstSet = points.Take(numFirstSet);
+
+			tree.BulkLoad(firstSet);
+
+			var numExtraPoints = 5;
+			var extraPointsSet = points.Skip(points.Length - numExtraPoints);
+			var extraPointsSetEnvelope =
+				extraPointsSet.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
+
+			tree.BulkLoad(extraPointsSet);
+
+			// first 10 entries and last 5 entries are completely mutually exclusive
+			// so searching the bounds of the new set should only return the new set exactly
+			Assert.Equal(extraPointsSet.OrderBy(x => x), tree.Search(extraPointsSetEnvelope).OrderBy(x => x));
+		}
+
+		[Fact]
+		public void AdditionalRemoveTest()
+		{
+			var tree = new RBush<Point>();
+			var numDelete = 18;
+
+			foreach (var p in points)
+				tree.Insert(p);
+
+			foreach (var p in points.Take(numDelete))
+				tree.Delete(p);
+
+			Assert.Equal(points.Length - numDelete, tree.Count);
+			Assert.Equal(points.Skip(numDelete).OrderBy(x => x), tree.Search().OrderBy(x => x));
+		}
+
+		[Fact]
+		public void BulkLoadAfterDeleteTest1()
+		{
+			var pts = GetPoints(20);
+			var ptsDelete = pts.Take(18);
+			var tree = new RBush<Point>(maxEntries: 4);
+
+			tree.BulkLoad(pts);
+
+			foreach (var item in ptsDelete)
+				tree.Delete(item);
+
+			tree.BulkLoad(ptsDelete);
+
+			Assert.Equal(pts.Count, tree.Search().Count);
+			Assert.Equal(pts.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		}
+
+		[Fact]
+		public void BulkLoadAfterDeleteTest2()
+		{
+			var pts = GetPoints(20);
+			var ptsDelete = pts.Take(4);
+			var tree = new RBush<Point>(maxEntries: 4);
+
+			tree.BulkLoad(pts);
+
+			foreach (var item in ptsDelete)
+				tree.Delete(item);
+
+			tree.BulkLoad(ptsDelete);
+
+			Assert.Equal(pts.Count, tree.Search().Count);
+			Assert.Equal(pts.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		}
+
+		[Fact]
+		public void InsertAfterDeleteTest1()
+		{
+			var pts = GetPoints(20);
+			var ptsDelete = pts.Take(18);
+			var tree = new RBush<Point>(maxEntries: 4);
+
+			foreach (var item in pts)
+				tree.Insert(item);
+
+			foreach (var item in ptsDelete)
+				tree.Delete(item);
+
+			foreach (var item in ptsDelete)
+				tree.Insert(item);
+
+			Assert.Equal(pts.Count, tree.Search().Count);
+			Assert.Equal(pts.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		}
+
+		[Fact]
+		public void InsertAfterDeleteTest2()
+		{
+			var pts = GetPoints(20);
+			var ptsDelete = pts.Take(4);
+			var tree = new RBush<Point>(maxEntries: 4);
+
+			foreach (var item in pts)
+				tree.Insert(item);
+
+			foreach (var item in ptsDelete)
+				tree.Delete(item);
+
+			foreach (var item in ptsDelete)
+				tree.Insert(item);
+
+			Assert.Equal(pts.Count, tree.Search().Count);
+			Assert.Equal(pts.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		}
+
+		private readonly List<Point> missingEnvelopeTestData = new List<Point>
 		{
 			new Point(minX: 35.0457204123358, minY: 31.5946330633669, maxX: 35.1736414417038, maxY: 31.7658263429689),
 			new Point(minX: 35.0011136524732, minY: 31.6701999643473, maxX: 35.0119650302309, maxY: 31.6763344627552),

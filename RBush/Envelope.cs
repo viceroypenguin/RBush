@@ -51,10 +51,16 @@ namespace RBush
 			this.MaxY >= other.MinY;
 
 		public bool Equals(Envelope other) =>
-			this.MinX == other.MinX &&
-			this.MinY == other.MinY &&
-			this.MaxX == other.MaxX &&
-			this.MaxY == other.MaxY;
+			this == other;
+
+		public static bool operator ==(Envelope left, Envelope right) =>
+			left.MinX == right.MinX &&
+			left.MinY == right.MinY &&
+			left.MaxX == right.MaxX &&
+			left.MaxY == right.MaxY;
+
+		public static bool operator !=(Envelope left, Envelope right) =>
+			!(left == right);
 
 		public static Envelope InfiniteBounds { get; } =
 			new Envelope(
