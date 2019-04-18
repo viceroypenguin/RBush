@@ -174,10 +174,14 @@ namespace RBush
 			var num = right - left + 1;
 			if (num <= maxEntries)
 			{
-				if (height == 1)
-					return new Node(data.Skip(left).Take(num).ToList(), height);
-				else
-					return new Node(new List<ISpatialData> { BuildNodes(data, left, right, height - 1, this.maxEntries) }, height);
+				return height == 1
+					? new Node(data.GetRange(left, num), height)
+					: new Node(
+						new List<ISpatialData>
+						{
+							BuildNodes(data, left, right, height - 1, this.maxEntries),
+						},
+						height);
 			}
 
 			data.Sort(left, num, CompareMinX);
