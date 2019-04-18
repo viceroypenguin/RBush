@@ -199,6 +199,7 @@ namespace RBush.Test
 				.ToList();
 
 			Assert.Equal(shouldFindPoints, foundPoints);
+			Assert.Equal(shouldFindPoints.Count, tree.Count);
 		}
 
 		[Fact]

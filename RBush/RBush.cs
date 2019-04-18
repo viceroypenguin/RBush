@@ -105,6 +105,7 @@ namespace RBush
 			{
 				var path = c.Pop();
 				(path.Peek() as Node).Children.Remove(item);
+				Count--;
 				while (!path.IsEmpty)
 				{
 					(path.Peek() as Node).ResetEnvelope();
