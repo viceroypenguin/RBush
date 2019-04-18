@@ -39,12 +39,10 @@ namespace RBush
 			this.Count = 0;
 		}
 
-		public IReadOnlyList<T> Search() => GetAllChildren(this.Root).ToList();
+		public IReadOnlyList<T> Search() => GetAllChildren(new List<T>(), this.Root);
 
-		public IReadOnlyList<T> Search(in Envelope boundingBox)
-		{
-			return DoSearch(boundingBox).Select(x => (T)x.Peek()).ToList();
-		}
+		public IReadOnlyList<T> Search(in Envelope boundingBox) =>
+			DoSearch(boundingBox);
 
 		public void Insert(T item)
 		{
@@ -102,7 +100,7 @@ namespace RBush
 
 		public void Delete(T item)
 		{
-			var candidates = DoSearch(item.Envelope);
+			var candidates = DoPathSearch(item.Envelope);
 
 			foreach (var c in candidates
 				.Where(c =>

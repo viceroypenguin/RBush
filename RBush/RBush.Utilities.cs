@@ -16,15 +16,14 @@ namespace RBush
 		#endregion
 
 		#region Search
-		private List<ImmutableStack<ISpatialData>> DoSearch(in Envelope boundingBox)
+		private List<ImmutableStack<ISpatialData>> DoPathSearch(in Envelope boundingBox)
 		{
-			var node = this.Root;
-			if (!node.Envelope.Intersects(boundingBox))
+			if (!Root.Envelope.Intersects(boundingBox))
 				return new List<ImmutableStack<ISpatialData>>();
 
 			var intersections = new List<ImmutableStack<ISpatialData>>();
 			var queue = new Queue<ImmutableStack<ISpatialData>>();
-			queue.Enqueue(ImmutableStack<ISpatialData>.Empty.Push(node));
+			queue.Enqueue(ImmutableStack<ISpatialData>.Empty.Push(Root));
 
 			do
 			{
@@ -40,6 +39,35 @@ namespace RBush
 					}
 				}
 			} while (queue.Count != 0);
+
+			return intersections;
+		}
+
+		private List<T> DoSearch(in Envelope boundingBox)
+		{
+			if (!Root.Envelope.Intersects(boundingBox))
+				return new List<T>();
+
+			var intersections = new List<T>();
+			var queue = new Queue<Node>();
+			queue.Enqueue(Root);
+
+			while (queue.Count != 0)
+			{
+				var item = queue.Dequeue();
+				if (item.IsLeaf)
+				{
+					foreach (T leafChildItem in item.children.Cast<T>())
+						if (leafChildItem.Envelope.Intersects(boundingBox))
+							intersections.Add(leafChildItem);
+				}
+				else
+				{
+					foreach (var child in item.children.Cast<Node>())
+						if (child.Envelope.Intersects(boundingBox))
+							queue.Enqueue(child);
+				}
+			}
 
 			return intersections;
 		}
@@ -221,12 +249,20 @@ namespace RBush
 			return envelope;
 		}
 
-		private IEnumerable<T> GetAllChildren(Node n)
+		private List<T> GetAllChildren(List<T> list, Node n)
 		{
 			if (n.IsLeaf)
-				return n.children.Cast<T>();
+			{
+				list.AddRange(
+					n.children.Cast<T>());
+			}
 			else
-				return n.children.Cast<Node>().SelectMany(GetAllChildren);
+			{
+				foreach (var node in n.children.Cast<Node>())
+					GetAllChildren(list, node);
+			}
+
+			return list;
 		}
 
 	}
