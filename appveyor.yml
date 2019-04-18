@@ -25,9 +25,7 @@ build_script:
     - cmd: dotnet publish ./RBush/RBush.csproj -c Release
 
 test_script:
-    - cmd: cd RBush.Test
-    - cmd: dotnet xunit
-    - cmd: cd ..
+    - cmd: dotnet test
 
 after_test:
     - cmd: nuget pack ./RBush/RBush.nuspec -version %appveyor_build_version%

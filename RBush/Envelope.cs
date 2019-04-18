@@ -2,7 +2,7 @@
 
 namespace RBush
 {
-	public readonly struct Envelope
+	public readonly struct Envelope : IEquatable<Envelope>
 	{
 		public double MinX { get; }
 		public double MinY { get; }
@@ -27,10 +27,8 @@ namespace RBush
 				maxX: Math.Max(this.MaxX, other.MaxX),
 				maxY: Math.Max(this.MaxY, other.MaxY));
 
-		public Envelope Clone()
-		{
-			return new Envelope(this.MinX, this.MinY, this.MaxX, this.MaxY);
-		}
+		public Envelope Clone() =>
+			new Envelope(this.MinX, this.MinY, this.MaxX, this.MaxY);
 
 		public Envelope Intersection(in Envelope other) =>
 			new Envelope(
@@ -40,30 +38,23 @@ namespace RBush
 				maxY: Math.Min(this.MaxY, other.MaxY)
 			);
 
-		public Envelope Enlargement(in Envelope other)
-		{
-			var clone = this.Clone();
-			clone.Extend(other);
-			return clone;
-		}
+		public bool Contains(in Envelope other) =>
+			this.MinX <= other.MinX &&
+			this.MinY <= other.MinY &&
+			this.MaxX >= other.MaxX &&
+			this.MaxY >= other.MaxY;
 
-		public bool Contains(in Envelope other)
-		{
-			return
-				this.MinX <= other.MinX &&
-				this.MinY <= other.MinY &&
-				this.MaxX >= other.MaxX &&
-				this.MaxY >= other.MaxY;
-		}
+		public bool Intersects(in Envelope other) =>
+			this.MinX <= other.MaxX &&
+			this.MinY <= other.MaxY &&
+			this.MaxX >= other.MinX &&
+			this.MaxY >= other.MinY;
 
-		public bool Intersects(in Envelope other)
-		{
-			return
-				this.MinX <= other.MaxX &&
-				this.MinY <= other.MaxY &&
-				this.MaxX >= other.MinX &&
-				this.MaxY >= other.MinY;
-		}
+		public bool Equals(Envelope other) =>
+			this.MinX == other.MinX &&
+			this.MinY == other.MinY &&
+			this.MaxX == other.MaxX &&
+			this.MaxY == other.MaxY;
 
 		public static Envelope InfiniteBounds { get; } =
 			new Envelope(

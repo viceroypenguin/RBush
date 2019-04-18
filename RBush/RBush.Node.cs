@@ -6,29 +6,43 @@ namespace RBush
 {
 	public partial class RBush<T>
 	{
-		internal class Node : ISpatialData
+		public class Node : ISpatialData
 		{
 			private Envelope _envelope;
 
-			public Node(List<ISpatialData> items, int height)
+			internal Node(List<ISpatialData> items, int height)
 			{
 				this.Height = height;
-				this.Children = items;
+				this.children = items;
 				ResetEnvelope();
 			}
 
-			public void Add(ISpatialData node)
+			internal void Add(ISpatialData node)
 			{
-				Children.Add(node);
+				children.Add(node);
 				_envelope = Envelope.Extend(node.Envelope);
 			}
 
-			public void ResetEnvelope()
+			internal void Remove(ISpatialData node)
 			{
-				_envelope = GetEnclosingEnvelope(Children);
+				children.Remove(node);
+				ResetEnvelope();
 			}
 
-			public List<ISpatialData> Children { get; }
+			internal void RemoveRange(int index, int count)
+			{
+				children.RemoveRange(index, count);
+				ResetEnvelope();
+			}
+
+			internal void ResetEnvelope()
+			{
+				_envelope = GetEnclosingEnvelope(children);
+			}
+
+			internal readonly List<ISpatialData> children;
+
+			public IReadOnlyList<ISpatialData> Children => children;
 			public int Height { get; }
 			public bool IsLeaf => Height == 1;
 			public ref readonly Envelope Envelope => ref _envelope;

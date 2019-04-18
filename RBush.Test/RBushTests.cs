@@ -71,28 +71,28 @@ namespace RBush.Test
 			var data = GetPoints(12);
 
 			var tree = new RBush<Point>();
-			for (int i = 0; i < 9; i++)
+			for (var i = 0; i < 9; i++)
 				tree.Insert(data[i]);
 
-			Assert.Equal(1, tree.root.Height);
-			Assert.Equal(9, tree.root.Children.Count);
-			Assert.True(tree.root.IsLeaf);
+			Assert.Equal(1, tree.Root.Height);
+			Assert.Equal(9, tree.Root.children.Count);
+			Assert.True(tree.Root.IsLeaf);
 
-			Assert.Equal(0, tree.root.Envelope.MinX);
-			Assert.Equal(0, tree.root.Envelope.MinY);
-			Assert.Equal(8, tree.root.Envelope.MaxX);
-			Assert.Equal(8, tree.root.Envelope.MaxY);
+			Assert.Equal(0, tree.Root.Envelope.MinX);
+			Assert.Equal(0, tree.Root.Envelope.MinY);
+			Assert.Equal(8, tree.Root.Envelope.MaxX);
+			Assert.Equal(8, tree.Root.Envelope.MaxY);
 
 			tree.Insert(data[9]);
 
-			Assert.Equal(2, tree.root.Height);
-			Assert.Equal(2, tree.root.Children.Count);
-			Assert.False(tree.root.IsLeaf);
+			Assert.Equal(2, tree.Root.Height);
+			Assert.Equal(2, tree.Root.children.Count);
+			Assert.False(tree.Root.IsLeaf);
 
-			Assert.Equal(0, tree.root.Envelope.MinX);
-			Assert.Equal(0, tree.root.Envelope.MinY);
-			Assert.Equal(9, tree.root.Envelope.MaxX);
-			Assert.Equal(9, tree.root.Envelope.MaxY);
+			Assert.Equal(0, tree.Root.Envelope.MinX);
+			Assert.Equal(0, tree.Root.Envelope.MinY);
+			Assert.Equal(9, tree.Root.Envelope.MaxX);
+			Assert.Equal(9, tree.Root.Envelope.MaxY);
 		}
 
 		[Fact]
@@ -124,7 +124,7 @@ namespace RBush.Test
 			tree.BulkLoad(points);
 
 			Assert.Equal(points.Length * 2, tree.Count);
-			Assert.Equal(4, tree.root.Height);
+			Assert.Equal(4, tree.Root.Height);
 		}
 
 		[Fact]
@@ -140,7 +140,7 @@ namespace RBush.Test
 			tree2.BulkLoad(smaller);
 
 			Assert.True(tree1.Count == tree2.Count);
-			Assert.True(tree1.root.Height == tree2.root.Height);
+			Assert.True(tree1.Root.Height == tree2.Root.Height);
 
 			var allPoints = points.Concat(smaller).OrderBy(x => x).ToList();
 			Assert.Equal(allPoints, tree1.Search().OrderBy(x => x).ToList());
@@ -219,7 +219,7 @@ namespace RBush.Test
 			tree.Clear();
 
 			Assert.Equal(0, tree.Count);
-			Assert.Equal(0, tree.root.Children.Count);
+			Assert.Empty(tree.Root.children);
 		}
 
 		private List<Point> missingEnvelopeTestData = new List<Point>
@@ -323,7 +323,7 @@ namespace RBush.Test
 		[Fact]
 		public void MissingEnvelopeTestInsertIndividually()
 		{
-			RBush<Point> tree = new RBush<Point>();
+			var tree = new RBush<Point>();
 			foreach (var p in missingEnvelopeTestData)
 				tree.Insert(p);
 
@@ -340,7 +340,7 @@ namespace RBush.Test
 		[Fact]
 		public void TestBulk()
 		{
-			RBush<Point> tree = new RBush<Point>();
+			var tree = new RBush<Point>();
 			tree.BulkLoad(missingEnvelopeTestData);
 
 			var envelope = new Envelope(

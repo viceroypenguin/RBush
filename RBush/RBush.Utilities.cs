@@ -18,7 +18,7 @@ namespace RBush
 		#region Search
 		private List<ImmutableStack<ISpatialData>> DoSearch(in Envelope boundingBox)
 		{
-			var node = this.root;
+			var node = this.Root;
 			if (!node.Envelope.Intersects(boundingBox))
 				return new List<ImmutableStack<ISpatialData>>();
 
@@ -29,7 +29,7 @@ namespace RBush
 			do
 			{
 				var current = queue.Dequeue();
-				foreach (var c in (current.Peek() as Node).Children)
+				foreach (var c in (current.Peek() as Node).children)
 				{
 					if (c.Envelope.Intersects(boundingBox))
 					{
@@ -49,7 +49,7 @@ namespace RBush
 		private List<Node> FindCoveringArea(in Envelope area, int depth)
 		{
 			var path = new List<Node>();
-			var node = this.root;
+			var node = this.Root;
 			var _area = area; //FIX CS1628
 
 			while (true)
@@ -57,8 +57,8 @@ namespace RBush
 				path.Add(node);
 				if (node.IsLeaf || path.Count == depth) return path;
 
-				node = node.Children
-					.Select(c => new { EnlargedArea = c.Envelope.Enlargement(_area).Area, c.Envelope.Area, Node = c as Node, })
+				node = node.children
+					.Select(c => new { EnlargedArea = c.Envelope.Extend(_area).Area, c.Envelope.Area, Node = c as Node, })
 					.OrderBy(x => x.EnlargedArea)
 					.ThenBy(x => x.Area)
 					.Select(x => x.Node)
@@ -75,7 +75,7 @@ namespace RBush
 
 			while (--depth >= 0)
 			{
-				if (path[depth].Children.Count > maxEntries)
+				if (path[depth].children.Count > maxEntries)
 				{
 					var newNode = SplitNode(path[depth]);
 					if (depth == 0)
@@ -90,28 +90,28 @@ namespace RBush
 
 		#region SplitNode
 		private void SplitRoot(Node newNode) =>
-			this.root = new Node(new List<ISpatialData> { this.root, newNode }, this.root.Height + 1);
+			this.Root = new Node(new List<ISpatialData> { this.Root, newNode }, this.Root.Height + 1);
 
 		private Node SplitNode(Node node)
 		{
 			SortChildren(node);
 
-			var splitPoint = GetBestSplitIndex(node.Children);
-			var newChildren = node.Children.Skip(splitPoint).ToList();
-			node.Children.RemoveRange(splitPoint, node.Children.Count - splitPoint);
+			var splitPoint = GetBestSplitIndex(node.children);
+			var newChildren = node.children.Skip(splitPoint).ToList();
+			node.RemoveRange(splitPoint, node.children.Count - splitPoint);
 			return new Node(newChildren, node.Height);
 		}
 
 		#region SortChildren
 		private void SortChildren(Node node)
 		{
-			node.Children.Sort(CompareMinX);
-			var splitsByX = GetPotentialSplitMargins(node.Children);
-			node.Children.Sort(CompareMinY);
-			var splitsByY = GetPotentialSplitMargins(node.Children);
+			node.children.Sort(CompareMinX);
+			var splitsByX = GetPotentialSplitMargins(node.children);
+			node.children.Sort(CompareMinY);
+			var splitsByY = GetPotentialSplitMargins(node.children);
 
 			if (splitsByX < splitsByY)
-				node.Children.Sort(CompareMinX);
+				node.children.Sort(CompareMinX);
 		}
 
 		private double GetPotentialSplitMargins(List<ISpatialData> children) =>
@@ -220,9 +220,9 @@ namespace RBush
 		private IEnumerable<T> GetAllChildren(Node n)
 		{
 			if (n.IsLeaf)
-				return n.Children.Cast<T>();
+				return n.children.Cast<T>();
 			else
-				return n.Children.Cast<Node>().SelectMany(GetAllChildren);
+				return n.children.Cast<Node>().SelectMany(GetAllChildren);
 		}
 
 	}
