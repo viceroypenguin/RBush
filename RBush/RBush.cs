@@ -121,7 +121,7 @@ namespace RBush
 					if (n.children.Count != 0)
 						n.ResetEnvelope();
 					else
-						(path.Peek() as Node).Remove(n);
+						if (!path.IsEmpty) (path.Peek() as Node).Remove(n);
 				}
 			}
 		}

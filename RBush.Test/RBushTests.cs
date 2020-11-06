@@ -223,6 +223,28 @@ namespace RBush.Test
 		}
 
 		[Fact]
+		public void Delete_TreeIsEmpty_ShouldNotThrow()
+		{
+			var tree = new RBush<Point>();
+
+			tree.Delete(new Point(1, 1, 1, 1));
+
+			Assert.Equal(0, tree.Count);
+		}
+
+		[Fact]
+		public void Delete_DeletingLastPoint_ShouldNotThrow()
+		{
+			var tree = new RBush<Point>();
+			Point p = new Point(1, 1, 1, 1);
+			tree.Insert(p);
+
+			tree.Delete(p);
+
+			Assert.Equal(0, tree.Count);
+		}
+
+		[Fact]
 		public void ClearWorks()
 		{
 			var tree = new RBush<Point>(maxEntries: 4);
