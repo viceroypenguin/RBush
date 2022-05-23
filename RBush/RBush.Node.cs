@@ -13,6 +13,7 @@ namespace RBush
 			internal Node(List<ISpatialData> items, int height)
 			{
 				this.Height = height;
+				this.IsLeaf = height == 1;
 				this.children = items;
 				ResetEnvelope();
 			}
@@ -44,7 +45,7 @@ namespace RBush
 
 			public IReadOnlyList<ISpatialData> Children => children;
 			public int Height { get; }
-			public bool IsLeaf => Height == 1;
+			public bool IsLeaf { get; }
 			public ref readonly Envelope Envelope => ref _envelope;
 		}
 	}
