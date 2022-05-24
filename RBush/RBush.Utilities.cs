@@ -55,21 +55,18 @@ namespace RBush
 			while (queue.Count != 0)
 			{
 				var item = queue.Dequeue();
-				for (var i = 0; i < item.children.Count; i++)
-				{
-					var childItem = item.children[i];
 
-					if (childItem.Envelope.Intersects(boundingBox))
-					{
-						if (item.IsLeaf)
-						{
+				if (item.IsLeaf)
+				{
+					foreach (var childItem in item.children)
+						if (childItem.Envelope.Intersects(boundingBox))
 							intersections.Add((T)childItem);
-						}
-						else
-						{
+				}
+				else
+				{
+					foreach (var childItem in item.children)
+						if (childItem.Envelope.Intersects(boundingBox))
 							queue.Enqueue((Node)childItem);
-						}
-					}
 				}
 			}
 
