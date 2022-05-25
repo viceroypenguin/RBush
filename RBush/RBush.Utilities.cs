@@ -58,15 +58,21 @@ namespace RBush
 
 				if (item.IsLeaf)
 				{
-					foreach (var childItem in item.children)
-						if (childItem.Envelope.Intersects(boundingBox))
-							intersections.Add((T)childItem);
+					for (var index = 0; index < item.children.Count; index++)
+					{
+						var leafChildItem = item.children[index];
+						if (leafChildItem.Envelope.Intersects(boundingBox))
+							intersections.Add((T)leafChildItem);
+					}
 				}
 				else
 				{
-					foreach (var childItem in item.children)
-						if (childItem.Envelope.Intersects(boundingBox))
-							queue.Enqueue((Node)childItem);
+					for (var index = 0; index < item.children.Count; index++)
+					{
+						var childNode = item.children[index];
+						if (childNode.Envelope.Intersects(boundingBox))
+							queue.Enqueue((Node)childNode);
+					}
 				}
 			}
 
