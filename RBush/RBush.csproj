@@ -1,15 +1,46 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-  <PropertyGroup>
-    <TargetFramework>netstandard1.2</TargetFramework>
-    <GenerateAssemblyInfo>false</GenerateAssemblyInfo>
-    <LangVersion>latest</LangVersion>
-  </PropertyGroup>
+	<PropertyGroup>
+		<TargetFrameworks>netstandard1.2;netcoreapp3.1;net6.0</TargetFrameworks>
+		<AssemblyName>RBush</AssemblyName>
+		<RootNamespace>RBush</RootNamespace>
 
-  <Import Project="..\RBush.Common.Props" />
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
 
-  <ItemGroup>
-    <PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
-  </ItemGroup>
+	<PropertyGroup Label="NuGet">
+		<Title>RBush</Title>
+		<Description>Spatial Index data structure; used to make it easier to find data points on a two dimensional plane.</Description>
+
+		<Authors>viceroypenguin</Authors>
+		<PackageTags>.NET R-Tree Algorithm tree search spatial index</PackageTags>
+		<Copyright>Copyright © 2017-2022 Turning Code, LLC (and others)</Copyright>
+
+		<PackageLicenseExpression>MIT</PackageLicenseExpression>
+		<PackageReadmeFile>readme.md</PackageReadmeFile>
+
+		<PublishRepositoryUrl>true</PublishRepositoryUrl>
+		<RepositoryUrl>https://github.com/viceroypenguin/RBush</RepositoryUrl>
+		<RepositoryType>git</RepositoryType>
+
+		<IncludeSymbols>true</IncludeSymbols>
+		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+
+		<GenerateDocumentationFile>true</GenerateDocumentationFile>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<None Include="..\readme.md" Pack="true" PackagePath="\" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+			<_Parameter1>RBush.Test</_Parameter1>
+		</AssemblyAttribute>
+	</ItemGroup>
+
+	<ItemGroup>
+		<PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
+	</ItemGroup>
 
 </Project>
