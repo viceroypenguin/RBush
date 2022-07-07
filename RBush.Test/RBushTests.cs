@@ -11,10 +11,10 @@ public class RBushTests
 		public Point(double minX, double minY, double maxX, double maxY)
 		{
 			_envelope = new Envelope(
-				minX: minX,
-				minY: minY,
-				maxX: maxX,
-				maxY: maxY);
+				MinX: minX,
+				MinY: minY,
+				MaxX: maxX,
+				MaxY: maxY);
 		}
 
 		public ref readonly Envelope Envelope => ref _envelope;
@@ -513,10 +513,10 @@ public class RBushTests
 			tree.Insert(p);
 
 		var envelope = new Envelope(
-			minX: 34.73274678,
-			minY: 31.87729923,
-			maxX: 34.73274678,
-			maxY: 31.87729923);
+			MinX: 34.73274678,
+			MinY: 31.87729923,
+			MaxX: 34.73274678,
+			MaxY: 31.87729923);
 		Assert.Equal(
 			expected: tree.Search().Where(p => p.Envelope.Intersects(envelope)).Count(),
 			actual: tree.Search(envelope).Count);
@@ -529,10 +529,10 @@ public class RBushTests
 		tree.BulkLoad(missingEnvelopeTestData);
 
 		var envelope = new Envelope(
-			minX: 34.73274678,
-			minY: 31.87729923,
-			maxX: 34.73274678,
-			maxY: 31.87729923);
+			MinX: 34.73274678,
+			MinY: 31.87729923,
+			MaxX: 34.73274678,
+			MaxY: 31.87729923);
 		Assert.Equal(
 			expected: tree.Search().Where(p => p.Envelope.Intersects(envelope)).Count(),
 			actual: tree.Search(envelope).Count);

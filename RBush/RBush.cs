@@ -7,7 +7,7 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	private const int MinimumMinEntries = 2;
 	private const double DefaultFillFactor = 0.4;
 
-	private readonly EqualityComparer<T> comparer;
+	private readonly IEqualityComparer<T> comparer;
 	private readonly int maxEntries;
 	private readonly int minEntries;
 
@@ -17,7 +17,7 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	public RBush() : this(DefaultMaxEntries) { }
 	public RBush(int maxEntries)
 		: this(maxEntries, EqualityComparer<T>.Default) { }
-	public RBush(int maxEntries, EqualityComparer<T> comparer)
+	public RBush(int maxEntries, IEqualityComparer<T> comparer)
 	{
 		this.comparer = comparer;
 		this.maxEntries = Math.Max(MinimumMaxEntries, maxEntries);
