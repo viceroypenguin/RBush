@@ -52,18 +52,18 @@ namespace RBush
 
 		public void BulkLoad(IEnumerable<T> items)
 		{
-			var data = items.Cast<ISpatialData>().ToList();
-			if (data.Count == 0) return;
+			var data = items.Cast<ISpatialData>().ToArray();
+			if (data.Length == 0) return;
 
 			if (this.Root.IsLeaf &&
-				this.Root.children.Count + data.Count < maxEntries)
+				this.Root.children.Count + data.Length < maxEntries)
 			{
 				foreach (var i in data)
 					Insert((T)i);
 				return;
 			}
 
-			if (data.Count < this.minEntries)
+			if (data.Length < this.minEntries)
 			{
 				foreach (var i in data)
 					Insert((T)i);
@@ -71,7 +71,7 @@ namespace RBush
 			}
 
 			var dataRoot = BuildTree(data);
-			this.Count += data.Count;
+			this.Count += data.Length;
 
 			if (this.Root.children.Count == 0)
 				this.Root = dataRoot;
