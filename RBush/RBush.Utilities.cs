@@ -5,10 +5,10 @@ namespace RBush;
 public partial class RBush<T>
 {
 	#region Sort Functions
-	private static readonly IComparer<ISpatialData> CompareMinX =
-		ProjectionComparer<ISpatialData>.Create(d => d.Envelope.MinX);
-	private static readonly IComparer<ISpatialData> CompareMinY =
-		ProjectionComparer<ISpatialData>.Create(d => d.Envelope.MinY);
+	private static readonly IComparer<ISpatialData> s_compareMinX =
+		Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinX, y.Envelope.MinX));
+	private static readonly IComparer<ISpatialData> s_compareMinY =
+		Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinY, y.Envelope.MinY));
 	#endregion
 
 	#region Search
@@ -136,13 +136,13 @@ public partial class RBush<T>
 	#region SortChildren
 	private void SortChildren(Node node)
 	{
-		node.children.Sort(CompareMinX);
+		node.children.Sort(s_compareMinX);
 		var splitsByX = GetPotentialSplitMargins(node.children);
-		node.children.Sort(CompareMinY);
+		node.children.Sort(s_compareMinY);
 		var splitsByY = GetPotentialSplitMargins(node.children);
 
 		if (splitsByX < splitsByY)
-			node.children.Sort(CompareMinX);
+			node.children.Sort(s_compareMinX);
 	}
 
 	private double GetPotentialSplitMargins(List<ISpatialData> children) =>
@@ -215,7 +215,7 @@ public partial class RBush<T>
 					height);
 		}
 
-		data.Sort(left, num, CompareMinX);
+		data.Sort(left, num, s_compareMinX);
 
 		var nodeSize = (num + (maxEntries - 1)) / maxEntries;
 		var subSortLength = nodeSize * (int)Math.Ceiling(Math.Sqrt(maxEntries));
@@ -224,7 +224,7 @@ public partial class RBush<T>
 		for (int subCounter = left; subCounter <= right; subCounter += subSortLength)
 		{
 			var subRight = Math.Min(subCounter + subSortLength - 1, right);
-			data.Sort(subCounter, subRight - subCounter + 1, CompareMinY);
+			data.Sort(subCounter, subRight - subCounter + 1, s_compareMinY);
 
 			for (int nodeCounter = subCounter; nodeCounter <= subRight; nodeCounter += nodeSize)
 			{
