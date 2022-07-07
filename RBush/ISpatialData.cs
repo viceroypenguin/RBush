@@ -1,7 +1,6 @@
-﻿namespace RBush
+﻿namespace RBush;
+
+public interface ISpatialData
 {
-	public interface ISpatialData
-	{
-		ref readonly Envelope Envelope { get; }
-	}
+	ref readonly Envelope Envelope { get; }
 }

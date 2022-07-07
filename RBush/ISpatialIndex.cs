@@ -1,10 +1,7 @@
-﻿using System.Collections.Generic;
+﻿namespace RBush;
 
-namespace RBush
+public interface ISpatialIndex<out T>
 {
-	public interface ISpatialIndex<out T>
-	{
-		IReadOnlyList<T> Search();
-		IReadOnlyList<T> Search(in Envelope boundingBox);
-	}
+	IReadOnlyList<T> Search();
+	IReadOnlyList<T> Search(in Envelope boundingBox);
 }
