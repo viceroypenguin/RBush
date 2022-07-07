@@ -218,7 +218,7 @@ namespace RBush
 						height);
 			}
 
-			Sort(data, CompareMinX);
+			Sort(data, d => d.Envelope.MinX);
 
 			var nodeSize = (data.Count + (maxEntries - 1)) / maxEntries;
 			var subSortLength = nodeSize * (int)Math.Ceiling(Math.Sqrt(maxEntries));
@@ -226,7 +226,7 @@ namespace RBush
 			var children = new List<ISpatialData>(maxEntries);
 			foreach (var subData in Chunk(data, subSortLength))
 			{
-				Sort(subData, CompareMinY);
+				Sort(subData, d => d.Envelope.MinY);
 
 				foreach (var nodeData in Chunk(subData, nodeSize))
 				{
@@ -248,8 +248,12 @@ namespace RBush
 			}
 		}
 
-		private static void Sort(ArraySegment<ISpatialData> data, IComparer<ISpatialData> comparer) {
-			Array.Sort(data.Array, data.Offset, data.Count, comparer);
+		private static void Sort(ArraySegment<ISpatialData> data, Func<ISpatialData, double> selector) {
+			var ordered = data.OrderBy(selector);
+			int i = 0;
+			foreach (var item in ordered) {
+				data.Array[data.Offset + i++] = item;
+			}
 		}
 		#endregion
 
