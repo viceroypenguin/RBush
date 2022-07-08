@@ -10,9 +10,9 @@ namespace RBush
 	{
 		#region Sort Functions
 		private static readonly IComparer<ISpatialData> CompareMinX =
-			ProjectionComparer<ISpatialData>.Create(d => d.Envelope.MinX);
+			Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinX, y.Envelope.MinX));
 		private static readonly IComparer<ISpatialData> CompareMinY =
-			ProjectionComparer<ISpatialData>.Create(d => d.Envelope.MinY);
+			Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinY, y.Envelope.MinY));
 		#endregion
 
 		#region Search
@@ -218,7 +218,7 @@ namespace RBush
 						height);
 			}
 
-			Sort(data, d => d.Envelope.MinX);
+			Sort(data, CompareMinX);
 
 			var nodeSize = (data.Count + (maxEntries - 1)) / maxEntries;
 			var subSortLength = nodeSize * (int)Math.Ceiling(Math.Sqrt(maxEntries));
@@ -226,7 +226,7 @@ namespace RBush
 			var children = new List<ISpatialData>(maxEntries);
 			foreach (var subData in Chunk(data, subSortLength))
 			{
-				Sort(subData, d => d.Envelope.MinY);
+				Sort(subData, CompareMinY);
 
 				foreach (var nodeData in Chunk(subData, nodeSize))
 				{
@@ -248,14 +248,9 @@ namespace RBush
 			}
 		}
 
-		private static void Sort(ArraySegment<ISpatialData> data, Func<ISpatialData, double> selector)
+		private static void Sort(ArraySegment<ISpatialData> data, IComparer<ISpatialData> comparer)
 		{
-			var ordered = data.OrderBy(selector);
-			int i = 0;
-			foreach (var item in ordered)
-			{
-				data.Array[data.Offset + i++] = item;
-			}
+			Array.Sort(data.Array, data.Offset, data.Count, comparer);
 		}
 		#endregion
 
