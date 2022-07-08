@@ -248,10 +248,12 @@ namespace RBush
 			}
 		}
 
-		private static void Sort(ArraySegment<ISpatialData> data, Func<ISpatialData, double> selector) {
+		private static void Sort(ArraySegment<ISpatialData> data, Func<ISpatialData, double> selector)
+		{
 			var ordered = data.OrderBy(selector);
 			int i = 0;
-			foreach (var item in ordered) {
+			foreach (var item in ordered)
+			{
 				data.Array[data.Offset + i++] = item;
 			}
 		}
