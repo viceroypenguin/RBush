@@ -10,9 +10,9 @@ namespace RBush
 	{
 		#region Sort Functions
 		private static readonly IComparer<ISpatialData> CompareMinX =
-			ProjectionComparer<ISpatialData>.Create(d => d.Envelope.MinX);
+			Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinX, y.Envelope.MinX));
 		private static readonly IComparer<ISpatialData> CompareMinY =
-			ProjectionComparer<ISpatialData>.Create(d => d.Envelope.MinY);
+			Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinY, y.Envelope.MinY));
 		#endregion
 
 		#region Search
@@ -194,55 +194,63 @@ namespace RBush
 		#endregion
 
 		#region BuildTree
-		private Node BuildTree(List<ISpatialData> data)
+		private Node BuildTree(ISpatialData[] data)
 		{
-			var treeHeight = GetDepth(data.Count);
-			var rootMaxEntries = (int)Math.Ceiling(data.Count / Math.Pow(this.maxEntries, treeHeight - 1));
-			return BuildNodes(data, 0, data.Count - 1, treeHeight, rootMaxEntries);
+			var treeHeight = GetDepth(data.Length);
+			var rootMaxEntries = (int)Math.Ceiling(data.Length / Math.Pow(this.maxEntries, treeHeight - 1));
+			return BuildNodes(new ArraySegment<ISpatialData>(data), treeHeight, rootMaxEntries);
 		}
 
 		private int GetDepth(int numNodes) =>
 			(int)Math.Ceiling(Math.Log(numNodes) / Math.Log(this.maxEntries));
 
-		private Node BuildNodes(List<ISpatialData> data, int left, int right, int height, int maxEntries)
+		private Node BuildNodes(ArraySegment<ISpatialData> data, int height, int maxEntries)
 		{
-			var num = right - left + 1;
-			if (num <= maxEntries)
+			if (data.Count <= maxEntries)
 			{
 				return height == 1
-					? new Node(data.GetRange(left, num), height)
+					? new Node(data.ToList(), height)
 					: new Node(
 						new List<ISpatialData>
 						{
-							BuildNodes(data, left, right, height - 1, this.maxEntries),
+							BuildNodes(data, height - 1, this.maxEntries),
 						},
 						height);
 			}
 
-			data.Sort(left, num, CompareMinX);
+			Sort(data, CompareMinX);
 
-			var nodeSize = (num + (maxEntries - 1)) / maxEntries;
+			var nodeSize = (data.Count + (maxEntries - 1)) / maxEntries;
 			var subSortLength = nodeSize * (int)Math.Ceiling(Math.Sqrt(maxEntries));
 
 			var children = new List<ISpatialData>(maxEntries);
-			for (int subCounter = left; subCounter <= right; subCounter += subSortLength)
+			foreach (var subData in Chunk(data, subSortLength))
 			{
-				var subRight = Math.Min(subCounter + subSortLength - 1, right);
-				data.Sort(subCounter, subRight - subCounter + 1, CompareMinY);
+				Sort(subData, CompareMinY);
 
-				for (int nodeCounter = subCounter; nodeCounter <= subRight; nodeCounter += nodeSize)
+				foreach (var nodeData in Chunk(subData, nodeSize))
 				{
-					children.Add(
-						BuildNodes(
-							data,
-							nodeCounter,
-							Math.Min(nodeCounter + nodeSize - 1, subRight),
-							height - 1,
-							this.maxEntries));
+					children.Add(BuildNodes(nodeData, height - 1, this.maxEntries));
 				}
 			}
 
 			return new Node(children, height);
+		}
+
+		private static IEnumerable<ArraySegment<ISpatialData>> Chunk(ArraySegment<ISpatialData> values, int chunkSize)
+		{
+			int start = 0;
+			while (start < values.Count)
+			{
+				int len = Math.Min(values.Count - start, chunkSize);
+				yield return new ArraySegment<ISpatialData>(values.Array, values.Offset + start, len);
+				start += chunkSize;
+			}
+		}
+
+		private static void Sort(ArraySegment<ISpatialData> data, IComparer<ISpatialData> comparer)
+		{
+			Array.Sort(data.Array, data.Offset, data.Count, comparer);
 		}
 		#endregion
 
