@@ -152,7 +152,7 @@ public partial class RBush<T>
 	private double GetPotentialEnclosingMargins(List<ISpatialData> children)
 	{
 		var envelope = Envelope.EmptyBounds;
-		int i = 0;
+		var i = 0;
 		for (; i < _minEntries; i++)
 		{
 			envelope = envelope.Extend(children[i].Envelope);
@@ -235,10 +235,10 @@ public partial class RBush<T>
 
 	private static IEnumerable<ArraySegment<ISpatialData>> Chunk(ArraySegment<ISpatialData> values, int chunkSize)
 	{
-		int start = 0;
+		var start = 0;
 		while (start < values.Count)
 		{
-			int len = Math.Min(values.Count - start, chunkSize);
+			var len = Math.Min(values.Count - start, chunkSize);
 			yield return new ArraySegment<ISpatialData>(values.Array, values.Offset + start, len);
 			start += chunkSize;
 		}

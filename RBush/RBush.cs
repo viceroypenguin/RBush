@@ -27,7 +27,7 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 
 	/// <summary>
 	/// Initializes a new instance of the <see cref="RBush{T}"/> that is
-	/// empty and has the default tree width and default <see cref="IComparer{T}"/>.
+	/// empty and has the default tree width and default <see cref="IEqualityComparer{T}"/>.
 	/// </summary>
 	public RBush()
 		: this(DefaultMaxEntries, EqualityComparer<T>.Default) { }
@@ -153,9 +153,11 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 		{
 			if (this.Root.Height < dataRoot.Height)
 			{
+#pragma warning disable IDE0180 // netstandard 1.2 doesn't support tuple
 				var tmp = this.Root;
 				this.Root = dataRoot;
 				dataRoot = tmp;
+#pragma warning restore IDE0180
 			}
 
 			this.Insert(dataRoot, this.Root.Height - dataRoot.Height);
@@ -175,8 +177,8 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 		foreach (var c in candidates
 			.Where(c =>
 			{
-				if (c.Peek() is T _item)
-					return _comparer.Equals(item, _item);
+				if (c.Peek() is T i)
+					return _comparer.Equals(item, i);
 				return false;
 			}))
 		{
