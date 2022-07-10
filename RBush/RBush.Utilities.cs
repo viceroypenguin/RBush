@@ -24,7 +24,7 @@ public partial class RBush<T>
 		do
 		{
 			var current = queue.Dequeue();
-			foreach (var c in (current.Peek() as Node).children)
+			foreach (var c in (current.Peek() as Node).Items)
 			{
 				if (c.Envelope.Intersects(boundingBox))
 				{
@@ -54,18 +54,18 @@ public partial class RBush<T>
 
 			if (item.IsLeaf)
 			{
-				for (var index = 0; index < item.children.Count; index++)
+				for (var index = 0; index < item.Items.Count; index++)
 				{
-					var leafChildItem = item.children[index];
+					var leafChildItem = item.Items[index];
 					if (leafChildItem.Envelope.Intersects(boundingBox))
 						intersections.Add((T)leafChildItem);
 				}
 			}
 			else
 			{
-				for (var index = 0; index < item.children.Count; index++)
+				for (var index = 0; index < item.Items.Count; index++)
 				{
-					var childNode = item.children[index];
+					var childNode = item.Items[index];
 					if (childNode.Envelope.Intersects(boundingBox))
 						queue.Enqueue((Node)childNode);
 				}
@@ -88,7 +88,7 @@ public partial class RBush<T>
 			path.Add(node);
 			if (node.IsLeaf || path.Count == depth) return path;
 
-			node = node.children
+			node = node.Items
 				.Select(c => new { EnlargedArea = c.Envelope.Extend(_area).Area, c.Envelope.Area, Node = c as Node, })
 				.OrderBy(x => x.EnlargedArea)
 				.ThenBy(x => x.Area)
@@ -106,7 +106,7 @@ public partial class RBush<T>
 
 		while (--depth >= 0)
 		{
-			if (path[depth].children.Count > maxEntries)
+			if (path[depth].Items.Count > _maxEntries)
 			{
 				var newNode = SplitNode(path[depth]);
 				if (depth == 0)
@@ -127,22 +127,22 @@ public partial class RBush<T>
 	{
 		SortChildren(node);
 
-		var splitPoint = GetBestSplitIndex(node.children);
-		var newChildren = node.children.Skip(splitPoint).ToList();
-		node.RemoveRange(splitPoint, node.children.Count - splitPoint);
+		var splitPoint = GetBestSplitIndex(node.Items);
+		var newChildren = node.Items.Skip(splitPoint).ToList();
+		node.RemoveRange(splitPoint, node.Items.Count - splitPoint);
 		return new Node(newChildren, node.Height);
 	}
 
 	#region SortChildren
 	private void SortChildren(Node node)
 	{
-		node.children.Sort(s_compareMinX);
-		var splitsByX = GetPotentialSplitMargins(node.children);
-		node.children.Sort(s_compareMinY);
-		var splitsByY = GetPotentialSplitMargins(node.children);
+		node.Items.Sort(s_compareMinX);
+		var splitsByX = GetPotentialSplitMargins(node.Items);
+		node.Items.Sort(s_compareMinY);
+		var splitsByY = GetPotentialSplitMargins(node.Items);
 
 		if (splitsByX < splitsByY)
-			node.children.Sort(s_compareMinX);
+			node.Items.Sort(s_compareMinX);
 	}
 
 	private double GetPotentialSplitMargins(List<ISpatialData> children) =>
@@ -153,13 +153,13 @@ public partial class RBush<T>
 	{
 		var envelope = Envelope.EmptyBounds;
 		int i = 0;
-		for (; i < minEntries; i++)
+		for (; i < _minEntries; i++)
 		{
 			envelope = envelope.Extend(children[i].Envelope);
 		}
 
 		var totalMargin = envelope.Margin;
-		for (; i < children.Count - minEntries; i++)
+		for (; i < children.Count - _minEntries; i++)
 		{
 			envelope = envelope.Extend(children[i].Envelope);
 			totalMargin += envelope.Margin;
@@ -171,7 +171,7 @@ public partial class RBush<T>
 
 	private int GetBestSplitIndex(List<ISpatialData> children)
 	{
-		return Enumerable.Range(minEntries, children.Count - minEntries)
+		return Enumerable.Range(_minEntries, children.Count - _minEntries)
 			.Select(i =>
 			{
 				var leftEnvelope = GetEnclosingEnvelope(children.Take(i));
@@ -193,12 +193,12 @@ public partial class RBush<T>
 	private Node BuildTree(ISpatialData[] data)
 	{
 		var treeHeight = GetDepth(data.Length);
-		var rootMaxEntries = (int)Math.Ceiling(data.Length / Math.Pow(this.maxEntries, treeHeight - 1));
+		var rootMaxEntries = (int)Math.Ceiling(data.Length / Math.Pow(this._maxEntries, treeHeight - 1));
 		return BuildNodes(new ArraySegment<ISpatialData>(data), treeHeight, rootMaxEntries);
 	}
 
 	private int GetDepth(int numNodes) =>
-		(int)Math.Ceiling(Math.Log(numNodes) / Math.Log(this.maxEntries));
+		(int)Math.Ceiling(Math.Log(numNodes) / Math.Log(this._maxEntries));
 
 	private Node BuildNodes(ArraySegment<ISpatialData> data, int height, int maxEntries)
 	{
@@ -209,7 +209,7 @@ public partial class RBush<T>
 				: new Node(
 					new List<ISpatialData>
 					{
-							BuildNodes(data, height - 1, this.maxEntries),
+						BuildNodes(data, height - 1, this._maxEntries),
 					},
 					height);
 		}
@@ -226,7 +226,7 @@ public partial class RBush<T>
 
 			foreach (var nodeData in Chunk(subData, nodeSize))
 			{
-				children.Add(BuildNodes(nodeData, height - 1, this.maxEntries));
+				children.Add(BuildNodes(nodeData, height - 1, this._maxEntries));
 			}
 		}
 
@@ -265,11 +265,11 @@ public partial class RBush<T>
 		if (n.IsLeaf)
 		{
 			list.AddRange(
-				n.children.Cast<T>());
+				n.Items.Cast<T>());
 		}
 		else
 		{
-			foreach (var node in n.children.Cast<Node>())
+			foreach (var node in n.Items.Cast<Node>())
 				GetAllChildren(list, node);
 		}
 

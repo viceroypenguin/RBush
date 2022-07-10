@@ -74,7 +74,7 @@ public class RBushTests
 			tree.Insert(data[i]);
 
 		Assert.Equal(1, tree.Root.Height);
-		Assert.Equal(9, tree.Root.children.Count);
+		Assert.Equal(9, tree.Root.Children.Count);
 		Assert.True(tree.Root.IsLeaf);
 
 		Assert.Equal(0, tree.Root.Envelope.MinX);
@@ -85,7 +85,7 @@ public class RBushTests
 		tree.Insert(data[9]);
 
 		Assert.Equal(2, tree.Root.Height);
-		Assert.Equal(2, tree.Root.children.Count);
+		Assert.Equal(2, tree.Root.Children.Count);
 		Assert.False(tree.Root.IsLeaf);
 
 		Assert.Equal(0, tree.Root.Envelope.MinX);
@@ -248,7 +248,7 @@ public class RBushTests
 		tree.Clear();
 
 		Assert.Equal(0, tree.Count);
-		Assert.Empty(tree.Root.children);
+		Assert.Empty(tree.Root.Children);
 	}
 
 	[Fact]
