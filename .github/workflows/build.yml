@@ -15,10 +15,6 @@ jobs:
       with:
         languages: 'csharp'
 
-    - name: Setup .NET 1.1
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '1.1.x'
     - name: Setup .NET 2.2
       uses: actions/setup-dotnet@v2
       with:

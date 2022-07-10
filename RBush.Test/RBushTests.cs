@@ -96,7 +96,8 @@ public class RBushTests
 			tree.Insert(p);
 
 		Assert.Equal(s_points.Length, tree.Count);
-		Assert.Equal(s_points.OrderBy(x => x), tree.Search().OrderBy(x => x));
+		Assert.True(new HashSet<Point>(s_points)
+			.SetEquals(tree.Search()));
 
 		Assert.Equal(
 			s_points.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope)),
@@ -110,7 +111,8 @@ public class RBushTests
 		tree.BulkLoad(s_points);
 
 		Assert.Equal(s_points.Length, tree.Count);
-		Assert.Equal(s_points.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		Assert.True(new HashSet<Point>(s_points)
+			.SetEquals(tree.Search()));
 	}
 
 	[Fact]
@@ -139,9 +141,9 @@ public class RBushTests
 		Assert.True(tree1.Count == tree2.Count);
 		Assert.True(tree1.Root.Height == tree2.Root.Height);
 
-		var allPoints = s_points.Concat(smaller).OrderBy(x => x).ToList();
-		Assert.Equal(allPoints, tree1.Search().OrderBy(x => x).ToList());
-		Assert.Equal(allPoints, tree2.Search().OrderBy(x => x).ToList());
+		var allPoints = new HashSet<Point>(s_points.Concat(smaller));
+		Assert.True(allPoints.SetEquals(tree1.Search()));
+		Assert.True(allPoints.SetEquals(tree2.Search()));
 	}
 
 	[Fact]
@@ -160,15 +162,10 @@ public class RBushTests
 		tree.BulkLoad(s_points);
 
 		var searchEnvelope = new Envelope(40, 20, 80, 70);
-		var shouldFindPoints = s_points
-			.Where(p => p.Envelope.Intersects(searchEnvelope))
-			.OrderBy(x => x)
-			.ToList();
-		var foundPoints = tree.Search(searchEnvelope)
-			.OrderBy(x => x)
-			.ToList();
+		var shouldFindPoints = new HashSet<Point>(s_points
+			.Where(p => p.Envelope.Intersects(searchEnvelope)));
 
-		Assert.Equal(shouldFindPoints, foundPoints);
+		Assert.True(shouldFindPoints.SetEquals(tree.Search(searchEnvelope)));
 	}
 
 	[Fact]
@@ -187,16 +184,10 @@ public class RBushTests
 		tree.Delete(s_points[len - 2]);
 		tree.Delete(s_points[len - 3]);
 
-		var shouldFindPoints = s_points
-			.Skip(3).Take(len - 6)
-			.OrderBy(x => x)
-			.ToList();
-		var foundPoints = tree.Search()
-			.OrderBy(x => x)
-			.ToList();
+		var shouldFindPoints = new HashSet<Point>(s_points
+			.Skip(3).Take(len - 6));
 
-		Assert.Equal(shouldFindPoints, foundPoints);
-		Assert.Equal(shouldFindPoints.Count, tree.Count);
+		Assert.True(shouldFindPoints.SetEquals(tree.Search()));
 		Assert.Equal(
 			shouldFindPoints.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope)),
 			tree.Envelope);
@@ -258,7 +249,8 @@ public class RBushTests
 		foreach (var p in firstSet)
 			tree.Insert(p);
 
-		Assert.Equal(firstSet.OrderBy(x => x), tree.Search(firstSetEnvelope).OrderBy(x => x));
+		Assert.True(new HashSet<Point>(firstSet)
+			.SetEquals(tree.Search(firstSetEnvelope)));
 	}
 
 	[Fact]
@@ -283,7 +275,8 @@ public class RBushTests
 
 		// first 10 entries and last 5 entries are completely mutually exclusive
 		// so searching the bounds of the new set should only return the new set exactly
-		Assert.Equal(extraPointsSet.OrderBy(x => x), tree.Search(extraPointsSetEnvelope).OrderBy(x => x));
+		Assert.True(new HashSet<Point>(extraPointsSet)
+			.SetEquals(tree.Search(extraPointsSetEnvelope)));
 	}
 
 	[Fact]
@@ -306,7 +299,8 @@ public class RBushTests
 
 		// first 10 entries and last 5 entries are completely mutually exclusive
 		// so searching the bounds of the new set should only return the new set exactly
-		Assert.Equal(extraPointsSet.OrderBy(x => x), tree.Search(extraPointsSetEnvelope).OrderBy(x => x));
+		Assert.True(new HashSet<Point>(extraPointsSet)
+			.SetEquals(tree.Search(extraPointsSetEnvelope)));
 	}
 
 	[Fact]
@@ -322,7 +316,8 @@ public class RBushTests
 			tree.Delete(p);
 
 		Assert.Equal(s_points.Length - numDelete, tree.Count);
-		Assert.Equal(s_points.Skip(numDelete).OrderBy(x => x), tree.Search().OrderBy(x => x));
+		Assert.True(new HashSet<Point>(s_points.Skip(numDelete))
+			.SetEquals(tree.Search()));
 	}
 
 	[Fact]
@@ -340,7 +335,7 @@ public class RBushTests
 		tree.BulkLoad(ptsDelete);
 
 		Assert.Equal(pts.Count, tree.Search().Count);
-		Assert.Equal(pts.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		Assert.True(new HashSet<Point>(pts).SetEquals(tree.Search()));
 	}
 
 	[Fact]
@@ -358,7 +353,8 @@ public class RBushTests
 		tree.BulkLoad(ptsDelete);
 
 		Assert.Equal(pts.Count, tree.Search().Count);
-		Assert.Equal(pts.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		Assert.True(new HashSet<Point>(pts)
+			.SetEquals(tree.Search()));
 	}
 
 	[Fact]
@@ -378,7 +374,8 @@ public class RBushTests
 			tree.Insert(item);
 
 		Assert.Equal(pts.Count, tree.Search().Count);
-		Assert.Equal(pts.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		Assert.True(new HashSet<Point>(pts)
+			.SetEquals(tree.Search()));
 	}
 
 	[Fact]
@@ -398,7 +395,8 @@ public class RBushTests
 			tree.Insert(item);
 
 		Assert.Equal(pts.Count, tree.Search().Count);
-		Assert.Equal(pts.OrderBy(x => x).ToList(), tree.Search().OrderBy(x => x).ToList());
+		Assert.True(new HashSet<Point>(pts)
+			.SetEquals(tree.Search()));
 	}
 
 	private readonly List<Point> _missingEnvelopeTestData = new()
