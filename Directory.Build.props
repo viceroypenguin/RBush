@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+    <LangVersion>10</LangVersion>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+
+		<AnalysisLevel>latest-recommended</AnalysisLevel>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Meziantou.Analyzer" Version="1.0.704" PrivateAssets="All" />
+		<PackageReference Include="Microsoft.CodeAnalysis.PerformanceSensitiveAnalyzers" Version="3.3.1" PrivateAssets="All" />
+	</ItemGroup>
+
+	<PropertyGroup Condition="'$(GITHUB_ACTIONS)' == 'true'">
+		<ContinuousIntegrationBuild>true</ContinuousIntegrationBuild>
+		<EmbedUntrackedSources>true</EmbedUntrackedSources>
+		<VSTestLogger>trx%3bLogFileName=$(MSBuildProjectName)-$(TargetFramework).trx</VSTestLogger>
+		<VSTestResultsDirectory>$(MSBuildThisFileDirectory)/TestResults</VSTestResultsDirectory>
+	</PropertyGroup>
+</Project>
