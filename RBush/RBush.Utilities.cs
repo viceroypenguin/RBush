@@ -81,19 +81,30 @@ public partial class RBush<T>
 	{
 		var path = new List<Node>();
 		var node = this.Root;
-		var _area = area; //FIX CS1628
 
 		while (true)
 		{
 			path.Add(node);
 			if (node.IsLeaf || path.Count == depth) return path;
 
-			node = node.Items
-				.Select(c => new { EnlargedArea = c.Envelope.Extend(_area).Area, c.Envelope.Area, Node = c as Node, })
-				.OrderBy(x => x.EnlargedArea)
-				.ThenBy(x => x.Area)
-				.Select(x => x.Node)
-				.First();
+			var next = node.Items[0];
+			var nextArea = next.Envelope.Extend(area).Area;
+
+			for (var i = 1; i < node.Items.Count; i++)
+			{
+				var newArea = node.Items[1].Envelope.Extend(area).Area;
+				if (newArea > nextArea)
+					continue;
+
+				if (newArea == nextArea
+					&& node.Items[i].Envelope.Area >= next.Envelope.Area)
+					continue;
+
+				next = node.Items[i];
+				nextArea = newArea;
+			}
+
+			node = next as Node;
 		}
 	}
 
@@ -101,7 +112,7 @@ public partial class RBush<T>
 	{
 		var path = FindCoveringArea(data.Envelope, depth);
 
-		var insertNode = path.Last();
+		var insertNode = path[path.Count - 1];
 		insertNode.Add(data);
 
 		while (--depth >= 0)
