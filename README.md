@@ -11,7 +11,8 @@ It's most commonly used in maps and data visualizations.
 
 This code has been copied over from the Javascript [RBush](https://github.com/mourner/rbush) library.
 
-[![Build status](https://ci.appveyor.com/api/projects/status/0dyclfrwgcnl9y67/branch/master?svg=true)](https://ci.appveyor.com/project/viceroypenguin/rbush/branch/master)
+[![Build status](https://github.com/viceroypenguin/RBush/actions/workflows/build.yml/badge.svg)](https://github.com/viceroypenguin/RBush/actions)
+[![License](https://img.shields.io/github/license/viceroypenguin/RBush)](license.txt)
 
 ## Install
 
@@ -21,14 +22,21 @@ Install with Nuget (`Install-Package RBush`).
 
 ### Creating a Tree
 
-First, define the data item class to implement `ISpatialData`, which requires that
-the class expose the `Envelope` property.  Then the class can be used as such:
+First, define the data item class to implement `ISpatialData`. Then the class can be used as such:
 
 ```csharp
+class Point : ISpatialData
+{
+  public Point(Envelope envelope) =>
+    _envelope = envelope;
+  private readonly Envelope _envelope;
+  public public ref readonly Envelope Envelope => _envelope;
+}
+
 var tree = new RBush<Point>()
 ```
 
-An optional argument (`maxEntries: `) to the constructor defines the maximum number 
+An optional argument (`maxEntries`) to the constructor defines the maximum number 
 of entries in a tree node. `9` (used by default) is a reasonable choice for most 
 applications. Higher value means faster insertion and slower search, and vice versa.
 
@@ -41,35 +49,13 @@ var tree = new RBush<Point>(maxEntries: 16)
 Insert an item:
 
 ```csharp
-var item = new Point
-{
-    Envelope = new Envelope
-    (
-        minX = 0,
-        minY = 0,
-        maxX = 0,
-        maxY = 0,
-    ),
-};
+var item = new Point(
+  new Envelope(
+    MinX: 0,
+    MinY: 0,
+    MaxX: 0,
+    MaxY: 0));
 tree.Insert(item);
-```
-
-### Removing Data
-
-Remove a previously inserted item:
-
-```csharp
-tree.Delete(item);
-```
-
-By default, RBush uses `object.Equals()` to select the item. If the item being 
-passed in is not the same reference value, ensure that the class supports 
-`object.Equals()` equality testing.
-
-Remove all items:
-
-```csharp
-tree.Clear();
 ```
 
 ### Bulk-Inserting Data
@@ -112,6 +98,25 @@ var allItems = tree.Search();
 ```
 
 Returns all items of the tree.
+
+### Removing Data
+
+#### Remove a previously inserted item:
+
+```csharp
+tree.Delete(item);
+```
+
+Unless provided an `IComparer<T>`, RBush uses `EqualityComparer<T>.Default` 
+to select the item. If the item being passed in is not the same reference 
+value, ensure that the class supports `EqualityComparer<T>.Default` 
+equality testing.
+
+#### Remove all items:
+
+```csharp
+tree.Clear();
+```
 
 ## Credit
 
