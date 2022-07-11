@@ -9,6 +9,10 @@ public partial class RBush<T>
 		Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinX, y.Envelope.MinX));
 	private static readonly IComparer<ISpatialData> s_compareMinY =
 		Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinY, y.Envelope.MinY));
+	private static readonly IComparer<T> s_tcompareMinX =
+		Comparer<T>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinX, y.Envelope.MinX));
+	private static readonly IComparer<T> s_tcompareMinY =
+		Comparer<T>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinY, y.Envelope.MinY));
 	#endregion
 
 	#region Search
@@ -201,22 +205,22 @@ public partial class RBush<T>
 	#endregion
 
 	#region BuildTree
-	private Node BuildTree(ISpatialData[] data)
+	private Node BuildTree(T[] data)
 	{
 		var treeHeight = GetDepth(data.Length);
 		var rootMaxEntries = (int)Math.Ceiling(data.Length / Math.Pow(this._maxEntries, treeHeight - 1));
-		return BuildNodes(new ArraySegment<ISpatialData>(data), treeHeight, rootMaxEntries);
+		return BuildNodes(new ArraySegment<T>(data), treeHeight, rootMaxEntries);
 	}
 
 	private int GetDepth(int numNodes) =>
 		(int)Math.Ceiling(Math.Log(numNodes) / Math.Log(this._maxEntries));
 
-	private Node BuildNodes(ArraySegment<ISpatialData> data, int height, int maxEntries)
+	private Node BuildNodes(ArraySegment<T> data, int height, int maxEntries)
 	{
 		if (data.Count <= maxEntries)
 		{
 			return height == 1
-				? new Node(data.ToList(), height)
+				? new Node(data.Cast<ISpatialData>().ToList(), height)
 				: new Node(
 					new List<ISpatialData>
 					{
@@ -225,7 +229,7 @@ public partial class RBush<T>
 					height);
 		}
 
-		Sort(data, s_compareMinX);
+		Sort(data, s_tcompareMinX);
 
 		var nodeSize = (data.Count + (maxEntries - 1)) / maxEntries;
 		var subSortLength = nodeSize * (int)Math.Ceiling(Math.Sqrt(maxEntries));
@@ -233,7 +237,7 @@ public partial class RBush<T>
 		var children = new List<ISpatialData>(maxEntries);
 		foreach (var subData in Chunk(data, subSortLength))
 		{
-			Sort(subData, s_compareMinY);
+			Sort(subData, s_tcompareMinY);
 
 			foreach (var nodeData in Chunk(subData, nodeSize))
 			{
@@ -244,18 +248,18 @@ public partial class RBush<T>
 		return new Node(children, height);
 	}
 
-	private static IEnumerable<ArraySegment<ISpatialData>> Chunk(ArraySegment<ISpatialData> values, int chunkSize)
+	private static IEnumerable<ArraySegment<T>> Chunk(ArraySegment<T> values, int chunkSize)
 	{
 		var start = 0;
 		while (start < values.Count)
 		{
 			var len = Math.Min(values.Count - start, chunkSize);
-			yield return new ArraySegment<ISpatialData>(values.Array, values.Offset + start, len);
+			yield return new ArraySegment<T>(values.Array, values.Offset + start, len);
 			start += chunkSize;
 		}
 	}
 
-	private static void Sort(ArraySegment<ISpatialData> data, IComparer<ISpatialData> comparer)
+	private static void Sort(ArraySegment<T> data, IComparer<T> comparer)
 	{
 		Array.Sort(data.Array, data.Offset, data.Count, comparer);
 	}

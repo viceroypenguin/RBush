@@ -116,21 +116,21 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	/// </remarks>
 	public void BulkLoad(IEnumerable<T> items)
 	{
-		var data = items.Cast<ISpatialData>().ToArray();
+		var data = items.ToArray();
 		if (data.Length == 0) return;
 
 		if (this.Root.IsLeaf &&
 			this.Root.Items.Count + data.Length < _maxEntries)
 		{
 			foreach (var i in data)
-				Insert((T)i);
+				Insert(i);
 			return;
 		}
 
 		if (data.Length < this._minEntries)
 		{
 			foreach (var i in data)
-				Insert((T)i);
+				Insert(i);
 			return;
 		}
 
