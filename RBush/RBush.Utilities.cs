@@ -1,6 +1,4 @@
-﻿using System.Collections.Immutable;
-
-namespace RBush;
+﻿namespace RBush;
 
 public partial class RBush<T>
 {
