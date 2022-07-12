@@ -4,8 +4,6 @@
 		<TargetFrameworks>netstandard1.2;netcoreapp3.1;net6.0</TargetFrameworks>
 		<AssemblyName>RBush</AssemblyName>
 		<RootNamespace>RBush</RootNamespace>
-
-		<Nullable>disable</Nullable>
 	</PropertyGroup>
 
 	<PropertyGroup Label="NuGet">
@@ -42,7 +40,7 @@
 	<ItemGroup>
 		<PackageReference Include="IsExternalInit" Version="1.0.3" PrivateAssets="All" />
 		<PackageReference Include="MinVer" Version="4.1.0" PrivateAssets="All" />
-		<PackageReference Include="System.Collections.Immutable" Version="1.5.0" />
+		<PackageReference Include="Nullable" Version="1.3.1" PrivateAssets="All" />
 	</ItemGroup>
 
 	<PropertyGroup Label="MinVer">

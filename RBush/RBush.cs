@@ -1,4 +1,6 @@
-﻿namespace RBush;
+﻿using System.Diagnostics.CodeAnalysis;
+
+namespace RBush;
 
 /// <summary>
 /// An implementation of the R-tree data structure for 2-d spatial indexing.
@@ -65,6 +67,7 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	/// <summary>
 	/// Removes all elements from the <see cref="RBush{T}"/>.
 	/// </summary>
+	[MemberNotNull(nameof(Root))]
 	public void Clear()
 	{
 		this.Root = new Node(new List<ISpatialData>(), 1);
@@ -174,9 +177,9 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 		DoDelete(Root, item);
 
 	private bool DoDelete(Node node, T item)
-			{
+	{
 		if (!node.Envelope.Contains(item.Envelope))
-				return false;
+			return false;
 
 		if (node.IsLeaf)
 		{
@@ -187,9 +190,9 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 				node.ResetEnvelope();
 				return true;
 			}
-				else
+			else
 				return false;
-			}
+		}
 
 		var flag = false;
 		foreach (Node n in node.Items)

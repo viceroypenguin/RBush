@@ -81,7 +81,7 @@ public partial class RBush<T>
 				nextArea = newArea;
 			}
 
-			node = next as Node;
+			node = (next as Node)!;
 		}
 	}
 
@@ -181,12 +181,12 @@ public partial class RBush<T>
 	private Node BuildTree(T[] data)
 	{
 		var treeHeight = GetDepth(data.Length);
-		var rootMaxEntries = (int)Math.Ceiling(data.Length / Math.Pow(this._maxEntries, treeHeight - 1));
+		var rootMaxEntries = (int)Math.Ceiling(data.Length / Math.Pow(_maxEntries, treeHeight - 1));
 		return BuildNodes(new ArraySegment<T>(data), treeHeight, rootMaxEntries);
 	}
 
 	private int GetDepth(int numNodes) =>
-		(int)Math.Ceiling(Math.Log(numNodes) / Math.Log(this._maxEntries));
+		(int)Math.Ceiling(Math.Log(numNodes) / Math.Log(_maxEntries));
 
 	private Node BuildNodes(ArraySegment<T> data, int height, int maxEntries)
 	{
@@ -197,7 +197,7 @@ public partial class RBush<T>
 				: new Node(
 					new List<ISpatialData>
 					{
-						BuildNodes(data, height - 1, this._maxEntries),
+						BuildNodes(data, height - 1, _maxEntries),
 					},
 					height);
 		}
@@ -214,7 +214,7 @@ public partial class RBush<T>
 
 			foreach (var nodeData in Chunk(subData, nodeSize))
 			{
-				children.Add(BuildNodes(nodeData, height - 1, this._maxEntries));
+				children.Add(BuildNodes(nodeData, height - 1, _maxEntries));
 			}
 		}
 
@@ -227,14 +227,14 @@ public partial class RBush<T>
 		while (start < values.Count)
 		{
 			var len = Math.Min(values.Count - start, chunkSize);
-			yield return new ArraySegment<T>(values.Array, values.Offset + start, len);
+			yield return new ArraySegment<T>(values.Array!, values.Offset + start, len);
 			start += chunkSize;
 		}
 	}
 
 	private static void Sort(ArraySegment<T> data, IComparer<T> comparer)
 	{
-		Array.Sort(data.Array, data.Offset, data.Count, comparer);
+		Array.Sort(data.Array!, data.Offset, data.Count, comparer);
 	}
 	#endregion
 

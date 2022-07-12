@@ -27,7 +27,7 @@ public static class RBushExtensions
 		double x,
 		double y,
 		double? maxDistance = null,
-		Func<T, bool> predicate = null)
+		Func<T, bool>? predicate = null)
 		where T : ISpatialData
 	{
 		var items = maxDistance == null
