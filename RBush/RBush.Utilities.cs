@@ -200,7 +200,9 @@ public partial class RBush<T>
 					height);
 		}
 
-		Sort(data, s_tcompareMinX);
+		// after much testing, this is faster than using Array.Sort() on the provided array
+		// in spite of the additional memory cost and copying. go figure!
+		var byX = new ArraySegment<T>(data.OrderBy(i => i.Envelope.MinX).ToArray());
 
 		var nodeSize = (data.Count + (maxEntries - 1)) / maxEntries;
 		var subSortLength = nodeSize * (int)Math.Ceiling(Math.Sqrt(maxEntries));
@@ -208,7 +210,7 @@ public partial class RBush<T>
 		var children = new List<ISpatialData>(maxEntries);
 		foreach (var subData in Chunk(data, subSortLength))
 		{
-			Sort(subData, s_tcompareMinY);
+			var byY = new ArraySegment<T>(subData.OrderBy(i => i.Envelope.MinY).ToArray());
 
 			foreach (var nodeData in Chunk(subData, nodeSize))
 			{
@@ -228,11 +230,6 @@ public partial class RBush<T>
 			yield return new ArraySegment<T>(values.Array!, values.Offset + start, len);
 			start += chunkSize;
 		}
-	}
-
-	private static void Sort(ArraySegment<T> data, IComparer<T> comparer)
-	{
-		Array.Sort(data.Array!, data.Offset, data.Count, comparer);
 	}
 	#endregion
 
