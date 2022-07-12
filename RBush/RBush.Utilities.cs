@@ -16,33 +16,6 @@ public partial class RBush<T>
 	#endregion
 
 	#region Search
-	private List<ImmutableStack<ISpatialData>> DoPathSearch(in Envelope boundingBox)
-	{
-		if (!Root.Envelope.Intersects(boundingBox))
-			return new List<ImmutableStack<ISpatialData>>();
-
-		var intersections = new List<ImmutableStack<ISpatialData>>();
-		var queue = new Queue<ImmutableStack<ISpatialData>>();
-		queue.Enqueue(ImmutableStack<ISpatialData>.Empty.Push(Root));
-
-		do
-		{
-			var current = queue.Dequeue();
-			foreach (var c in (current.Peek() as Node).Items)
-			{
-				if (c.Envelope.Intersects(boundingBox))
-				{
-					if (c is T)
-						intersections.Add(current.Push(c));
-					else
-						queue.Enqueue(current.Push(c));
-				}
-			}
-		} while (queue.Count != 0);
-
-		return intersections;
-	}
-
 	private List<T> DoSearch(in Envelope boundingBox)
 	{
 		if (!Root.Envelope.Intersects(boundingBox))

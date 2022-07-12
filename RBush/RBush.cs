@@ -170,31 +170,35 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	/// <param name="item">
 	/// The object to be removed from the <see cref="RBush{T}"/>.
 	/// </param>
-	public void Delete(T item)
-	{
-		var candidates = DoPathSearch(item.Envelope);
+	public void Delete(T item) =>
+		DoDelete(Root, item);
 
-		foreach (var c in candidates
-			.Where(c =>
+	private bool DoDelete(Node node, T item)
 			{
-				if (c.Peek() is T i)
-					return _comparer.Equals(item, i);
+		if (!node.Envelope.Contains(item.Envelope))
 				return false;
-			}))
-		{
-			var path = c.Pop();
-			(path.Peek() as Node).Remove(item);
-			Count--;
-			while (!path.IsEmpty)
-			{
-				path = path.Pop(out var e);
-				var n = e as Node;
 
-				if (n.Items.Count != 0)
-					n.ResetEnvelope();
-				else
-					if (!path.IsEmpty) (path.Peek() as Node).Remove(n);
+		if (node.IsLeaf)
+		{
+			var cnt = node.Items.RemoveAll(i => _comparer.Equals((T)i, item));
+			if (cnt != 0)
+			{
+				Count -= cnt;
+				node.ResetEnvelope();
+				return true;
 			}
+				else
+				return false;
+			}
+
+		var flag = false;
+		foreach (Node n in node.Items)
+		{
+			flag |= DoDelete(n, item);
 		}
+
+		if (flag)
+			node.ResetEnvelope();
+		return flag;
 	}
 }
