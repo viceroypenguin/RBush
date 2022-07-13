@@ -200,17 +200,17 @@ public partial class RBush<T>
 					height);
 		}
 
-		Sort(data, s_tcompareMinX);
+		var byX = new ArraySegment<T>(data.OrderBy(d => d.Envelope.MinX).ToArray());
 
 		var nodeSize = (data.Count + (maxEntries - 1)) / maxEntries;
 		var subSortLength = nodeSize * (int)Math.Ceiling(Math.Sqrt(maxEntries));
 
 		var children = new List<ISpatialData>(maxEntries);
-		foreach (var subData in Chunk(data, subSortLength))
+		foreach (var subData in Chunk(byX, subSortLength))
 		{
-			Sort(subData, s_tcompareMinY);
+			var byY = new ArraySegment<T>(subData.OrderBy(d => d.Envelope.MinY).ToArray());
 
-			foreach (var nodeData in Chunk(subData, nodeSize))
+			foreach (var nodeData in Chunk(byY, nodeSize))
 			{
 				children.Add(BuildNodes(nodeData, height - 1, _maxEntries));
 			}
@@ -228,11 +228,6 @@ public partial class RBush<T>
 			yield return new ArraySegment<T>(values.Array!, values.Offset + start, len);
 			start += chunkSize;
 		}
-	}
-
-	private static void Sort(ArraySegment<T> data, IComparer<T> comparer)
-	{
-		Array.Sort(data.Array!, data.Offset, data.Count, comparer);
 	}
 	#endregion
 
