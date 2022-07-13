@@ -200,7 +200,9 @@ public partial class RBush<T>
 					height);
 		}
 
-		var byX = new ArraySegment<T>(data.OrderBy(d => d.Envelope.MinX).ToArray());
+		// after much testing, this is faster than using Array.Sort() on the provided array
+		// in spite of the additional memory cost and copying. go figure!
+		var byX = new ArraySegment<T>(data.OrderBy(i => i.Envelope.MinX).ToArray());
 
 		var nodeSize = (data.Count + (maxEntries - 1)) / maxEntries;
 		var subSortLength = nodeSize * (int)Math.Ceiling(Math.Sqrt(maxEntries));
