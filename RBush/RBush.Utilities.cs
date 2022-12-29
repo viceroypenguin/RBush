@@ -29,20 +29,18 @@ public partial class RBush<T>
 
 			if (item.IsLeaf)
 			{
-				for (var index = 0; index < item.Items.Count; index++)
+				foreach (var i in item.Items)
 				{
-					var leafChildItem = item.Items[index];
-					if (leafChildItem.Envelope.Intersects(boundingBox))
-						intersections.Add((T)leafChildItem);
+					if (i.Envelope.Intersects(boundingBox))
+						intersections.Add((T)i);
 				}
 			}
 			else
 			{
-				for (var index = 0; index < item.Items.Count; index++)
+				foreach (var i in item.Items)
 				{
-					var childNode = item.Items[index];
-					if (childNode.Envelope.Intersects(boundingBox))
-						queue.Enqueue((Node)childNode);
+					if (i.Envelope.Intersects(boundingBox))
+						queue.Enqueue((Node)i);
 				}
 			}
 		}
@@ -65,17 +63,17 @@ public partial class RBush<T>
 			var next = node.Items[0];
 			var nextArea = next.Envelope.Extend(area).Area;
 
-			for (var i = 1; i < node.Items.Count; i++)
+			foreach (var i in node.Items)
 			{
-				var newArea = node.Items[1].Envelope.Extend(area).Area;
+				var newArea = i.Envelope.Extend(area).Area;
 				if (newArea > nextArea)
 					continue;
 
 				if (newArea == nextArea
-					&& node.Items[i].Envelope.Area >= next.Envelope.Area)
+					&& i.Envelope.Area >= next.Envelope.Area)
 					continue;
 
-				next = node.Items[i];
+				next = i;
 				nextArea = newArea;
 			}
 
