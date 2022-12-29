@@ -7,10 +7,6 @@ public partial class RBush<T>
 		Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinX, y.Envelope.MinX));
 	private static readonly IComparer<ISpatialData> s_compareMinY =
 		Comparer<ISpatialData>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinY, y.Envelope.MinY));
-	private static readonly IComparer<T> s_tcompareMinX =
-		Comparer<T>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinX, y.Envelope.MinX));
-	private static readonly IComparer<T> s_tcompareMinY =
-		Comparer<T>.Create((x, y) => Comparer<double>.Default.Compare(x.Envelope.MinY, y.Envelope.MinY));
 	#endregion
 
 	#region Search
