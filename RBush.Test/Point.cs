@@ -1,6 +1,6 @@
 ﻿namespace RBush.Test;
 
-internal class Point : ISpatialData, IEquatable<Point>
+internal sealed class Point : ISpatialData, IEquatable<Point>
 {
 	private readonly Envelope _envelope;
 
