@@ -65,17 +65,17 @@ public partial class RBush<T>
 			var next = node.Items[0];
 			var nextArea = next.Envelope.Extend(area).Area;
 
-			for (var i = 1; i < node.Items.Count; i++)
+			foreach (var i in node.Items)
 			{
-				var newArea = node.Items[1].Envelope.Extend(area).Area;
+				var newArea = i.Envelope.Extend(area).Area;
 				if (newArea > nextArea)
 					continue;
 
 				if (newArea == nextArea
-					&& node.Items[i].Envelope.Area >= next.Envelope.Area)
+					&& i.Envelope.Area >= next.Envelope.Area)
 					continue;
 
-				next = node.Items[i];
+				next = i;
 				nextArea = newArea;
 			}
 
