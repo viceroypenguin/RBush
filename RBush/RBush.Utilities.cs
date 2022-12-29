@@ -29,20 +29,18 @@ public partial class RBush<T>
 
 			if (item.IsLeaf)
 			{
-				for (var index = 0; index < item.Items.Count; index++)
+				foreach (var i in item.Items)
 				{
-					var leafChildItem = item.Items[index];
-					if (leafChildItem.Envelope.Intersects(boundingBox))
-						intersections.Add((T)leafChildItem);
+					if (i.Envelope.Intersects(boundingBox))
+						intersections.Add((T)i);
 				}
 			}
 			else
 			{
-				for (var index = 0; index < item.Items.Count; index++)
+				foreach (var i in item.Items)
 				{
-					var childNode = item.Items[index];
-					if (childNode.Envelope.Intersects(boundingBox))
-						queue.Enqueue((Node)childNode);
+					if (i.Envelope.Intersects(boundingBox))
+						queue.Enqueue((Node)i);
 				}
 			}
 		}
