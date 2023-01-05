@@ -173,7 +173,8 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	/// <param name="item">
 	/// The object to be removed from the <see cref="RBush{T}"/>.
 	/// </param>
-	public void Delete(T item) =>
+	/// <returns><see langword="bool" /> indicating whether the item was deleted.</returns>
+	public bool Delete(T item) =>
 		DoDelete(Root, item);
 
 	private bool DoDelete(Node node, T item)
