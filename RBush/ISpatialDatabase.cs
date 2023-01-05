@@ -21,7 +21,8 @@ public interface ISpatialDatabase<T> : ISpatialIndex<T>
 	/// <param name="item">
 	/// The object to be removed from the <see cref="ISpatialDatabase{T}"/>.
 	/// </param>
-	void Delete(T item);
+	/// <returns><see langword="bool" /> indicating whether the item was removed.</returns>
+	bool Delete(T item);
 
 	/// <summary>
 	/// Removes all elements from the <see cref="ISpatialDatabase{T}"/>.
