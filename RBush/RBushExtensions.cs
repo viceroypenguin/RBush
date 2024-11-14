@@ -30,6 +30,8 @@ public static class RBushExtensions
 		Func<T, bool>? predicate = null)
 		where T : ISpatialData
 	{
+		ArgumentNullException.ThrowIfNull(tree);
+
 		var items = maxDistance == null
 			? tree.Search()
 			: tree.Search(

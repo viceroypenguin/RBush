@@ -1,4 +1,4 @@
-﻿namespace RBush;
+namespace RBush;
 
 public partial class RBush<T>
 {
@@ -12,8 +12,8 @@ public partial class RBush<T>
 
 		internal Node(List<ISpatialData> items, int height)
 		{
-			this.Height = height;
-			this.Items = items;
+			Height = height;
+			Items = items;
 			ResetEnvelope();
 		}
 
@@ -25,7 +25,7 @@ public partial class RBush<T>
 
 		internal void Remove(ISpatialData node)
 		{
-			Items.Remove(node);
+			_ = Items.Remove(node);
 			ResetEnvelope();
 		}
 

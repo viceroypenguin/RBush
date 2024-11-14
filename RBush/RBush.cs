@@ -1,4 +1,4 @@
-﻿using System.Diagnostics.CodeAnalysis;
+using System.Diagnostics.CodeAnalysis;
 
 namespace RBush;
 
@@ -52,11 +52,11 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	/// <param name="comparer"></param>
 	public RBush(int maxEntries, IEqualityComparer<T> comparer)
 	{
-		this._comparer = comparer;
-		this._maxEntries = Math.Max(MinimumMaxEntries, maxEntries);
-		this._minEntries = Math.Max(MinimumMinEntries, (int)Math.Ceiling(this._maxEntries * DefaultFillFactor));
+		_comparer = comparer;
+		_maxEntries = Math.Max(MinimumMaxEntries, maxEntries);
+		_minEntries = Math.Max(MinimumMinEntries, (int)Math.Ceiling(_maxEntries * DefaultFillFactor));
 
-		this.Clear();
+		Clear();
 	}
 
 	/// <summary>
@@ -70,8 +70,8 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	[MemberNotNull(nameof(Root))]
 	public void Clear()
 	{
-		this.Root = new Node(new List<ISpatialData>(), 1);
-		this.Count = 0;
+		Root = new Node([], 1);
+		Count = 0;
 	}
 
 	/// <summary>
@@ -81,7 +81,7 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	/// A list of every element contained in the <see cref="RBush{T}"/>.
 	/// </returns>
 	public IReadOnlyList<T> Search() =>
-		GetAllChildren(new List<T>(), this.Root);
+		GetAllChildren([], Root);
 
 	/// <summary>
 	/// Get all of the elements from this <see cref="RBush{T}"/>
@@ -103,8 +103,8 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 	/// </param>
 	public void Insert(T item)
 	{
-		Insert(item, this.Root.Height);
-		this.Count++;
+		Insert(item, Root.Height);
+		Count++;
 	}
 
 	/// <summary>
@@ -122,15 +122,15 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 		var data = items.ToArray();
 		if (data.Length == 0) return;
 
-		if (this.Root.IsLeaf &&
-			this.Root.Items.Count + data.Length < _maxEntries)
+		if (Root.IsLeaf &&
+			Root.Items.Count + data.Length < _maxEntries)
 		{
 			foreach (var i in data)
 				Insert(i);
 			return;
 		}
 
-		if (data.Length < this._minEntries)
+		if (data.Length < _minEntries)
 		{
 			foreach (var i in data)
 				Insert(i);
@@ -138,32 +138,36 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 		}
 
 		var dataRoot = BuildTree(data);
-		this.Count += data.Length;
+		Count += data.Length;
 
-		if (this.Root.Items.Count == 0)
-			this.Root = dataRoot;
-		else if (this.Root.Height == dataRoot.Height)
+		if (Root.Items.Count == 0)
 		{
-			if (this.Root.Items.Count + dataRoot.Items.Count <= this._maxEntries)
+			Root = dataRoot;
+		}
+		else if (Root.Height == dataRoot.Height)
+		{
+			if (Root.Items.Count + dataRoot.Items.Count <= _maxEntries)
 			{
 				foreach (var isd in dataRoot.Items)
-					this.Root.Add(isd);
+					Root.Add(isd);
 			}
 			else
+			{
 				SplitRoot(dataRoot);
+			}
 		}
 		else
 		{
-			if (this.Root.Height < dataRoot.Height)
+			if (Root.Height < dataRoot.Height)
 			{
 #pragma warning disable IDE0180 // netstandard 1.2 doesn't support tuple
-				var tmp = this.Root;
-				this.Root = dataRoot;
+				var tmp = Root;
+				Root = dataRoot;
 				dataRoot = tmp;
 #pragma warning restore IDE0180
 			}
 
-			this.Insert(dataRoot, this.Root.Height - dataRoot.Height);
+			Insert(dataRoot, Root.Height - dataRoot.Height);
 		}
 	}
 
@@ -185,24 +189,24 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 		if (node.IsLeaf)
 		{
 			var cnt = node.Items.RemoveAll(i => _comparer.Equals((T)i, item));
-			if (cnt != 0)
-			{
-				Count -= cnt;
-				node.ResetEnvelope();
-				return true;
-			}
-			else
+			if (cnt == 0)
 				return false;
+
+			Count -= cnt;
+			node.ResetEnvelope();
+			return true;
+
 		}
 
 		var flag = false;
-		foreach (Node n in node.Items)
+		foreach (var n in node.Items)
 		{
-			flag |= DoDelete(n, item);
+			flag |= DoDelete((Node)n, item);
 		}
 
 		if (flag)
 			node.ResetEnvelope();
+
 		return flag;
 	}
 }

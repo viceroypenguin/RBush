@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 namespace RBush.Test;
 
@@ -24,10 +24,10 @@ public class RBushTests
 				maxY: i))
 			.ToList();
 
-	[Fact]
+	[Test]
 	public void RootLeafSplitWorks()
 	{
-		var data = RBushTests.GetPoints(12);
+		var data = GetPoints(12);
 
 		var tree = new RBush<Point>();
 		for (var i = 0; i < 9; i++)
@@ -54,7 +54,7 @@ public class RBushTests
 		Assert.Equal(9, tree.Root.Envelope.MaxY);
 	}
 
-	[Fact]
+	[Test]
 	public void InsertTestData()
 	{
 		var tree = new RBush<Point>();
@@ -70,7 +70,7 @@ public class RBushTests
 			tree.Envelope);
 	}
 
-	[Fact]
+	[Test]
 	public void BulkLoadTestData()
 	{
 		var tree = new RBush<Point>();
@@ -81,7 +81,7 @@ public class RBushTests
 			.SetEquals(tree.Search()));
 	}
 
-	[Fact]
+	[Test]
 	public void BulkLoadSplitsTreeProperly()
 	{
 		var tree = new RBush<Point>(maxEntries: 4);
@@ -92,10 +92,10 @@ public class RBushTests
 		Assert.Equal(4, tree.Root.Height);
 	}
 
-	[Fact]
+	[Test]
 	public void BulkLoadMergesTreesProperly()
 	{
-		var smaller = RBushTests.GetPoints(10);
+		var smaller = GetPoints(10);
 		var tree1 = new RBush<Point>(maxEntries: 4);
 		tree1.BulkLoad(smaller);
 		tree1.BulkLoad(s_points);
@@ -112,16 +112,16 @@ public class RBushTests
 		Assert.True(allPoints.SetEquals(tree2.Search()));
 	}
 
-	[Fact]
+	[Test]
 	public void SearchReturnsEmptyResultIfNothingFound()
 	{
 		var tree = new RBush<Point>(maxEntries: 4);
 		tree.BulkLoad(s_points);
 
-		Assert.Equal(Array.Empty<Point>(), tree.Search(new Envelope(200, 200, 210, 210)));
+		Assert.Equal([], tree.Search(new Envelope(200, 200, 210, 210)));
 	}
 
-	[Fact]
+	[Test]
 	public void SearchReturnsMatchingResults()
 	{
 		var tree = new RBush<Point>(maxEntries: 4);
@@ -134,7 +134,7 @@ public class RBushTests
 		Assert.True(shouldFindPoints.SetEquals(tree.Search(searchEnvelope)));
 	}
 
-	[Fact]
+	[Test]
 	public void BasicRemoveTest()
 	{
 		var tree = new RBush<Point>(maxEntries: 4);
@@ -142,13 +142,13 @@ public class RBushTests
 
 		var len = s_points.Length;
 
-		tree.Delete(s_points[0]);
-		tree.Delete(s_points[1]);
-		tree.Delete(s_points[2]);
+		_ = tree.Delete(s_points[0]);
+		_ = tree.Delete(s_points[1]);
+		_ = tree.Delete(s_points[2]);
 
-		tree.Delete(s_points[len - 1]);
-		tree.Delete(s_points[len - 2]);
-		tree.Delete(s_points[len - 3]);
+		_ = tree.Delete(s_points[len - 1]);
+		_ = tree.Delete(s_points[len - 2]);
+		_ = tree.Delete(s_points[len - 3]);
 
 		var shouldFindPoints = new HashSet<Point>(s_points
 			.Skip(3).Take(len - 6));
@@ -159,39 +159,39 @@ public class RBushTests
 			tree.Envelope);
 	}
 
-	[Fact]
+	[Test]
 	public void NonExistentItemCanBeDeleted()
 	{
 		var tree = new RBush<Point>(maxEntries: 4);
 		tree.BulkLoad(s_points);
 
-		tree.Delete(new Point(13, 13, 13, 13));
+		_ = tree.Delete(new Point(13, 13, 13, 13));
 		Assert.Equal(s_points.Length, tree.Count);
 	}
 
-	[Fact]
+	[Test]
 	public void DeleteTreeIsEmptyShouldNotThrow()
 	{
 		var tree = new RBush<Point>();
 
-		tree.Delete(new Point(1, 1, 1, 1));
+		_ = tree.Delete(new Point(1, 1, 1, 1));
 
 		Assert.Equal(0, tree.Count);
 	}
 
-	[Fact]
+	[Test]
 	public void DeleteDeletingLastPointShouldNotThrow()
 	{
 		var tree = new RBush<Point>();
 		var p = new Point(1, 1, 1, 1);
 		tree.Insert(p);
 
-		tree.Delete(p);
+		_ = tree.Delete(p);
 
 		Assert.Equal(0, tree.Count);
 	}
 
-	[Fact]
+	[Test]
 	public void ClearWorks()
 	{
 		var tree = new RBush<Point>(maxEntries: 4);
@@ -202,15 +202,15 @@ public class RBushTests
 		Assert.Empty(tree.Root.Children);
 	}
 
-	[Fact]
+	[Test]
 	public void TestSearchAfterInsert()
 	{
 		var maxEntries = 9;
 		var tree = new RBush<Point>(maxEntries);
 
-		var firstSet = s_points.Take(maxEntries);
-		var firstSetEnvelope =
-			firstSet.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
+		var firstSet = s_points.Take(maxEntries).ToList();
+		var firstSetEnvelope = firstSet
+			.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
 
 		foreach (var p in firstSet)
 			tree.Insert(p);
@@ -219,22 +219,22 @@ public class RBushTests
 			.SetEquals(tree.Search(firstSetEnvelope)));
 	}
 
-	[Fact]
+	[Test]
 	public void TestSearchAfterInsertWithSplitRoot()
 	{
 		var maxEntries = 4;
 		var tree = new RBush<Point>(maxEntries);
 
-		var numFirstSet = maxEntries * maxEntries + 2;  // Split-root will occur twice.
+		var numFirstSet = (maxEntries * maxEntries) + 2;  // Split-root will occur twice.
 		var firstSet = s_points.Take(numFirstSet);
 
 		foreach (var p in firstSet)
 			tree.Insert(p);
 
 		var numExtraPoints = 5;
-		var extraPointsSet = s_points.Skip(s_points.Length - numExtraPoints);
-		var extraPointsSetEnvelope =
-			extraPointsSet.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
+		var extraPointsSet = s_points.Skip(s_points.Length - numExtraPoints).ToList();
+		var extraPointsSetEnvelope = extraPointsSet
+			.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
 
 		foreach (var p in extraPointsSet)
 			tree.Insert(p);
@@ -245,21 +245,21 @@ public class RBushTests
 			.SetEquals(tree.Search(extraPointsSetEnvelope)));
 	}
 
-	[Fact]
+	[Test]
 	public void TestSearchAfterBulkLoadWithSplitRoot()
 	{
 		var maxEntries = 4;
 		var tree = new RBush<Point>(maxEntries);
 
-		var numFirstSet = maxEntries * maxEntries + 2;  // Split-root will occur twice.
+		var numFirstSet = (maxEntries * maxEntries) + 2;  // Split-root will occur twice.
 		var firstSet = s_points.Take(numFirstSet);
 
 		tree.BulkLoad(firstSet);
 
 		var numExtraPoints = 5;
-		var extraPointsSet = s_points.Skip(s_points.Length - numExtraPoints);
-		var extraPointsSetEnvelope =
-			extraPointsSet.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
+		var extraPointsSet = s_points.Skip(s_points.Length - numExtraPoints).ToList();
+		var extraPointsSetEnvelope = extraPointsSet
+			.Aggregate(Envelope.EmptyBounds, (e, p) => e.Extend(p.Envelope));
 
 		tree.BulkLoad(extraPointsSet);
 
@@ -269,7 +269,7 @@ public class RBushTests
 			.SetEquals(tree.Search(extraPointsSetEnvelope)));
 	}
 
-	[Fact]
+	[Test]
 	public void AdditionalRemoveTest()
 	{
 		var tree = new RBush<Point>();
@@ -279,24 +279,24 @@ public class RBushTests
 			tree.Insert(p);
 
 		foreach (var p in s_points.Take(numDelete))
-			tree.Delete(p);
+			_ = tree.Delete(p);
 
 		Assert.Equal(s_points.Length - numDelete, tree.Count);
 		Assert.True(new HashSet<Point>(s_points.Skip(numDelete))
 			.SetEquals(tree.Search()));
 	}
 
-	[Fact]
+	[Test]
 	public void BulkLoadAfterDeleteTest1()
 	{
-		var pts = RBushTests.GetPoints(20);
+		var pts = GetPoints(20);
 		var ptsDelete = pts.Take(18);
 		var tree = new RBush<Point>(maxEntries: 4);
 
 		tree.BulkLoad(pts);
 
 		foreach (var item in ptsDelete)
-			tree.Delete(item);
+			_ = tree.Delete(item);
 
 		tree.BulkLoad(ptsDelete);
 
@@ -304,17 +304,17 @@ public class RBushTests
 		Assert.True(new HashSet<Point>(pts).SetEquals(tree.Search()));
 	}
 
-	[Fact]
+	[Test]
 	public void BulkLoadAfterDeleteTest2()
 	{
-		var pts = RBushTests.GetPoints(20);
+		var pts = GetPoints(20);
 		var ptsDelete = pts.Take(4);
 		var tree = new RBush<Point>(maxEntries: 4);
 
 		tree.BulkLoad(pts);
 
 		foreach (var item in ptsDelete)
-			tree.Delete(item);
+			_ = tree.Delete(item);
 
 		tree.BulkLoad(ptsDelete);
 
@@ -323,18 +323,18 @@ public class RBushTests
 			.SetEquals(tree.Search()));
 	}
 
-	[Fact]
+	[Test]
 	public void InsertAfterDeleteTest1()
 	{
-		var pts = RBushTests.GetPoints(20);
-		var ptsDelete = pts.Take(18);
+		var pts = GetPoints(20);
+		var ptsDelete = pts.Take(18).ToList();
 		var tree = new RBush<Point>(maxEntries: 4);
 
 		foreach (var item in pts)
 			tree.Insert(item);
 
 		foreach (var item in ptsDelete)
-			tree.Delete(item);
+			_ = tree.Delete(item);
 
 		foreach (var item in ptsDelete)
 			tree.Insert(item);
@@ -344,18 +344,18 @@ public class RBushTests
 			.SetEquals(tree.Search()));
 	}
 
-	[Fact]
+	[Test]
 	public void InsertAfterDeleteTest2()
 	{
-		var pts = RBushTests.GetPoints(20);
-		var ptsDelete = pts.Take(4);
+		var pts = GetPoints(20);
+		var ptsDelete = pts.Take(4).ToList();
 		var tree = new RBush<Point>(maxEntries: 4);
 
 		foreach (var item in pts)
 			tree.Insert(item);
 
 		foreach (var item in ptsDelete)
-			tree.Delete(item);
+			_ = tree.Delete(item);
 
 		foreach (var item in ptsDelete)
 			tree.Insert(item);
@@ -365,8 +365,8 @@ public class RBushTests
 			.SetEquals(tree.Search()));
 	}
 
-	private readonly List<Point> _missingEnvelopeTestData = new()
-	{
+	private readonly List<Point> _missingEnvelopeTestData =
+	[
 		new Point(minX: 35.0457204123358, minY: 31.5946330633669, maxX: 35.1736414417038, maxY: 31.7658263429689),
 		new Point(minX: 35.0011136524732, minY: 31.6701999643473, maxX: 35.0119650302309, maxY: 31.6763344627552),
 		new Point(minX: 35.4519996266397, minY: 33.0521061332025, maxX: 35.6225745715679, maxY: 33.2873426178667),
@@ -461,9 +461,9 @@ public class RBushTests
 		new Point(minX: 34.6095401534748, minY: 31.7162092103111, maxX: 35.0591449537042, maxY: 32.0383069680269),
 		new Point(minX: 34.7421834416939, minY: 32.003746842197, maxX: 35.0354837295605, maxY: 32.1466473164001),
 		new Point(minX: 34.7905250664059, minY: 32.1179577036489, maxX: 35.0581623045431, maxY: 32.3417009250043),
-	};
+	];
 
-	[Fact]
+	[Test]
 	public void MissingEnvelopeTestInsertIndividually()
 	{
 		var tree = new RBush<Point>();
@@ -480,7 +480,7 @@ public class RBushTests
 			actual: tree.Search(envelope).Count);
 	}
 
-	[Fact]
+	[Test]
 	public void TestBulk()
 	{
 		var tree = new RBush<Point>();

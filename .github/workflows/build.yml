@@ -1,6 +1,14 @@
 name: Build
 
-on: [push, pull_request]
+on: 
+  workflow_dispatch:
+  push:
+    branches: 
+      - 'master'
+    paths-ignore:
+      - '**/readme.md'
+  pull_request:
+    types: [opened, synchronize, reopened]
 
 jobs:
   build:
@@ -8,43 +16,25 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
-    - name: Initialize CodeQL
-      uses: github/codeql-action/init@v2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        languages: 'csharp'
-
-    - name: Setup .NET 2.2
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '2.2.x'
-    - name: Setup .NET 3.1
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '3.1.x'
-    - name: Setup .NET 6.0
-      uses: actions/setup-dotnet@v2
-      with:
-        dotnet-version: '6.0.x'
+        dotnet-version: |
+          8.0.x
 
     - name: Restore dependencies
       run: dotnet restore
     - name: Build
       run: dotnet build -c Release --no-restore
     - name: Test
-      run: dotnet test -c Release --no-build --verbosity normal
+      run: dotnet test -c Release --no-build --logger GitHubActions
 
-    - name: Test Report
-      uses: dorny/test-reporter@v1
-      if: success() || failure()    # run this step even if previous step failed
+    - name: Upload coverage reports to Codecov with GitHub Action
+      uses: codecov/codecov-action@v4
       with:
-        name: 'Test report'
-        path: '**/*.trx'
-        reporter: 'dotnet-trx'
-
-    - name: Perform CodeQL Analysis
-      uses: github/codeql-action/analyze@v2
+        token: ${{ secrets.CODECOV_TOKEN }}
 
     - name: Package 
       run: dotnet pack -c Release --no-build -o nupkgs

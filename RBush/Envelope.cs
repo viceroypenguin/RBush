@@ -1,4 +1,4 @@
-﻿using System.Runtime.InteropServices;
+using System.Runtime.InteropServices;
 
 namespace RBush;
 
@@ -37,10 +37,10 @@ public readonly record struct Envelope(
 	/// <remarks>Does not affect the current bounding box.</remarks>
 	public Envelope Extend(in Envelope other) =>
 		new(
-			MinX: Math.Min(this.MinX, other.MinX),
-			MinY: Math.Min(this.MinY, other.MinY),
-			MaxX: Math.Max(this.MaxX, other.MaxX),
-			MaxY: Math.Max(this.MaxY, other.MaxY));
+			MinX: Math.Min(MinX, other.MinX),
+			MinY: Math.Min(MinY, other.MinY),
+			MaxX: Math.Max(MaxX, other.MaxX),
+			MaxY: Math.Max(MaxY, other.MaxY));
 
 	/// <summary>
 	/// Intersects a bounding box to only include the common area
@@ -51,10 +51,10 @@ public readonly record struct Envelope(
 	/// <remarks>Does not affect the current bounding box.</remarks>
 	public Envelope Intersection(in Envelope other) =>
 		new(
-			MinX: Math.Max(this.MinX, other.MinX),
-			MinY: Math.Max(this.MinY, other.MinY),
-			MaxX: Math.Min(this.MaxX, other.MaxX),
-			MaxY: Math.Min(this.MaxY, other.MaxY));
+			MinX: Math.Max(MinX, other.MinX),
+			MinY: Math.Max(MinY, other.MinY),
+			MaxX: Math.Min(MaxX, other.MaxX),
+			MaxY: Math.Min(MaxY, other.MaxY));
 
 	/// <summary>
 	/// Determines whether <paramref name="other"/> is contained
@@ -67,10 +67,10 @@ public readonly record struct Envelope(
 	/// <see langword="false" /> otherwise.
 	/// </returns>
 	public bool Contains(in Envelope other) =>
-		this.MinX <= other.MinX &&
-		this.MinY <= other.MinY &&
-		this.MaxX >= other.MaxX &&
-		this.MaxY >= other.MaxY;
+		MinX <= other.MinX &&
+		MinY <= other.MinY &&
+		MaxX >= other.MaxX &&
+		MaxY >= other.MaxY;
 
 	/// <summary>
 	/// Determines whether <paramref name="other"/> intersects
@@ -83,10 +83,10 @@ public readonly record struct Envelope(
 	/// <see langword="false" /> otherwise.
 	/// </returns>
 	public bool Intersects(in Envelope other) =>
-		this.MinX <= other.MaxX &&
-		this.MinY <= other.MaxY &&
-		this.MaxX >= other.MinX &&
-		this.MaxY >= other.MinY;
+		MinX <= other.MaxX &&
+		MinY <= other.MaxY &&
+		MaxX >= other.MinX &&
+		MaxY >= other.MinY;
 
 	/// <summary>
 	/// A bounding box that contains the entire 2-d plane.

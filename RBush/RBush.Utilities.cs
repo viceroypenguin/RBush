@@ -1,4 +1,4 @@
-﻿namespace RBush;
+namespace RBush;
 
 public partial class RBush<T>
 {
@@ -13,7 +13,7 @@ public partial class RBush<T>
 	private List<T> DoSearch(in Envelope boundingBox)
 	{
 		if (!Root.Envelope.Intersects(boundingBox))
-			return new List<T>();
+			return [];
 
 		var intersections = new List<T>();
 		var queue = new Queue<Node>();
@@ -49,7 +49,7 @@ public partial class RBush<T>
 	private List<Node> FindCoveringArea(in Envelope area, int depth)
 	{
 		var path = new List<Node>();
-		var node = this.Root;
+		var node = Root;
 
 		while (true)
 		{
@@ -67,7 +67,9 @@ public partial class RBush<T>
 
 				if (newArea == nextArea
 					&& i.Envelope.Area >= next.Envelope.Area)
+				{
 					continue;
+				}
 
 				next = i;
 				nextArea = newArea;
@@ -81,7 +83,7 @@ public partial class RBush<T>
 	{
 		var path = FindCoveringArea(data.Envelope, depth);
 
-		var insertNode = path[path.Count - 1];
+		var insertNode = path[^1];
 		insertNode.Add(data);
 
 		while (--depth >= 0)
@@ -95,13 +97,15 @@ public partial class RBush<T>
 					path[depth - 1].Add(newNode);
 			}
 			else
+			{
 				path[depth].ResetEnvelope();
+			}
 		}
 	}
 
 	#region SplitNode
 	private void SplitRoot(Node newNode) =>
-		this.Root = new Node(new List<ISpatialData> { this.Root, newNode }, this.Root.Height + 1);
+		Root = new Node([Root, newNode], Root.Height + 1);
 
 	private Node SplitNode(Node node)
 	{
@@ -187,10 +191,9 @@ public partial class RBush<T>
 			return height == 1
 				? new Node(data.Cast<ISpatialData>().ToList(), height)
 				: new Node(
-					new List<ISpatialData>
-					{
+					[
 						BuildNodes(data, height - 1, _maxEntries),
-					},
+					],
 					height);
 		}
 
@@ -231,23 +234,21 @@ public partial class RBush<T>
 	{
 		var envelope = Envelope.EmptyBounds;
 		foreach (var data in items)
-		{
 			envelope = envelope.Extend(data.Envelope);
-		}
+
 		return envelope;
 	}
 
-	private List<T> GetAllChildren(List<T> list, Node n)
+	private static List<T> GetAllChildren(List<T> list, Node n)
 	{
 		if (n.IsLeaf)
 		{
-			list.AddRange(
-				n.Items.Cast<T>());
+			list.AddRange(n.Items.Cast<T>());
 		}
 		else
 		{
 			foreach (var node in n.Items.Cast<Node>())
-				GetAllChildren(list, node);
+				_ = GetAllChildren(list, node);
 		}
 
 		return list;

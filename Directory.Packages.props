@@ -1,0 +1,21 @@
+<Project>
+  <PropertyGroup>
+	<ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
+  </PropertyGroup>
+  
+  <ItemGroup>
+	<PackageVersion Include="coverlet.collector" Version="6.0.2" />
+	<PackageVersion Include="coverlet.msbuild" Version="6.0.2" />
+	<PackageVersion Include="DotNet.ReproducibleBuilds" Version="1.2.25" />
+	<PackageVersion Include="GitHubActionsTestLogger" Version="2.4.1" />
+	<PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
+	<PackageVersion Include="MinVer" Version="6.0.0" />
+	<PackageVersion Include="TUnit.Engine" Version="0.2.212" />
+	<PackageVersion Include="xunit.v3.assert" Version="0.5.0-pre.27" />
+  </ItemGroup>
+  
+  <ItemGroup>
+	<GlobalPackageReference Include="Meziantou.Analyzer" Version="2.0.179" />
+	<GlobalPackageReference Include="PolySharp" Version="1.14.1" />
+  </ItemGroup>
+</Project>

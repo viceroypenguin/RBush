@@ -1,56 +1,47 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
 
-	<PropertyGroup>
-		<TargetFrameworks>netstandard1.2;netcoreapp3.1;net6.0</TargetFrameworks>
-		<AssemblyName>RBush</AssemblyName>
-		<RootNamespace>RBush</RootNamespace>
-	</PropertyGroup>
+  <PropertyGroup>
+	<TargetFrameworks>net47;netstandard2.0;net8.0</TargetFrameworks>
+	<IsPackable>true</IsPackable>
+  </PropertyGroup>
 
-	<PropertyGroup Label="NuGet">
-		<Title>RBush</Title>
-		<Description>Spatial Index data structure; used to make it easier to find data points on a two dimensional plane.</Description>
+  <PropertyGroup Label="NuGet">
+	<Title>RBush</Title>
+	<Description>Spatial Index data structure; used to make it easier to find data points on a two dimensional plane.</Description>
 
-		<Authors>viceroypenguin</Authors>
-		<PackageTags>.NET R-Tree Algorithm tree search spatial index</PackageTags>
-		<Copyright>Copyright © 2017-2022 Turning Code, LLC (and others)</Copyright>
+	<Authors>viceroypenguin</Authors>
+	<PackageTags>.NET R-Tree Algorithm tree search spatial index</PackageTags>
+	<Copyright>Copyright © 2017-2024 Turning Code, LLC (and others)</Copyright>
 
-		<PackageLicenseExpression>MIT</PackageLicenseExpression>
-		<PackageReadmeFile>readme.md</PackageReadmeFile>
+	<PackageLicenseExpression>MIT</PackageLicenseExpression>
+	<PackageReadmeFile>readme.md</PackageReadmeFile>
 
-		<PublishRepositoryUrl>true</PublishRepositoryUrl>
-		<RepositoryUrl>https://github.com/viceroypenguin/RBush</RepositoryUrl>
-		<RepositoryType>git</RepositoryType>
+	<PublishRepositoryUrl>true</PublishRepositoryUrl>
+	<RepositoryUrl>https://github.com/viceroypenguin/RBush</RepositoryUrl>
+	<RepositoryType>git</RepositoryType>
 
-		<IncludeSymbols>true</IncludeSymbols>
-		<SymbolPackageFormat>snupkg</SymbolPackageFormat>
+	<GenerateDocumentationFile>true</GenerateDocumentationFile>
+  </PropertyGroup>
 
-		<GenerateDocumentationFile>true</GenerateDocumentationFile>
-	</PropertyGroup>
+  <ItemGroup>
+	<None Include="..\readme.md" Pack="true" PackagePath="\" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<None Include="..\readme.md" Pack="true" PackagePath="\" />
-	</ItemGroup>
+  <ItemGroup>
+	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
+	  <_Parameter1>RBush.Test</_Parameter1>
+	</AssemblyAttribute>
+  </ItemGroup>
 
-	<ItemGroup>
-		<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-			<_Parameter1>RBush.Test</_Parameter1>
-		</AssemblyAttribute>
-	</ItemGroup>
+  <ItemGroup>
+	<PackageReference Include="DotNet.ReproducibleBuilds" PrivateAssets="All" />
+	<PackageReference Include="MinVer" PrivateAssets="all" />
+  </ItemGroup>
 
-	<ItemGroup>
-		<PackageReference Include="Microsoft.SourceLink.GitHub" Version="1.1.1" PrivateAssets="All" />
-		<PackageReference Include="MinVer" Version="4.2.0" PrivateAssets="All" />
-		<PackageReference Include="PolySharp" Version="1.8.1" PrivateAssets="All" />
-	</ItemGroup>
-
-	<PropertyGroup Label="MinVer">
-		<MinVerAutoIncrement>minor</MinVerAutoIncrement>
-		<MinVerDefaultPreReleasePhase>preview</MinVerDefaultPreReleasePhase>
-		<MinVerTagPrefix>v</MinVerTagPrefix>
-	</PropertyGroup>
-
-	<PropertyGroup Label="PolySharp">
-		<PolySharpExcludeGeneratedTypes>System.Index;System.Range</PolySharpExcludeGeneratedTypes>
-	</PropertyGroup>
+  <PropertyGroup Label="MinVer">
+	<MinVerAutoIncrement>minor</MinVerAutoIncrement>
+	<MinVerDefaultPreReleaseIdentifiers>preview.0</MinVerDefaultPreReleaseIdentifiers>
+	<MinVerTagPrefix>v</MinVerTagPrefix>
+  </PropertyGroup>
 
 </Project>

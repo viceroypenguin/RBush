@@ -1,4 +1,4 @@
-﻿using Xunit;
+using Xunit;
 
 namespace RBush.Test;
 
@@ -22,7 +22,7 @@ public class KnnTests
 			{99,3,103,5},   {41,92,44,96}, {79,40,79,41}, {29,2,29,4},
 		});
 
-	[Fact]
+	[Test]
 	public void FindsNNeighbors()
 	{
 		var bush = new RBush<Point>();
@@ -35,19 +35,19 @@ public class KnnTests
 		Assert.Equal(expected, result);
 	}
 
-	[Fact]
+	[Test]
 	public void DoesNotThrowIfRequestingTooManyItems()
 	{
 		var bush = new RBush<Point>();
 		bush.BulkLoad(s_points);
 
-		bush.Knn(1000, 40, 40);
+		_ = bush.Knn(1000, 40, 40);
 	}
 
 	/// <summary>
 	/// This test is not correct in original javascript library
 	/// </summary>
-	[Fact]
+	[Test]
 	public void FindAllNeighborsForMaxDistance()
 	{
 		var bush = new RBush<Point>();
@@ -61,7 +61,7 @@ public class KnnTests
 		Assert.Equal(expected, result);
 	}
 
-	[Fact]
+	[Test]
 	public void FindNNeighborsForMaxDistance()
 	{
 		var bush = new RBush<Point>();
@@ -76,13 +76,13 @@ public class KnnTests
 		Assert.Equal(expected, result);
 	}
 
-	[Fact]
+	[Test]
 	public void DoesNotThrowIfRequestingTooManyItemsForMaxDistance()
 	{
 		var bush = new RBush<Point>();
 		bush.BulkLoad(s_points);
 
-		bush.Knn(1000, 40, 40, maxDistance: 10);
+		_ = bush.Knn(1000, 40, 40, maxDistance: 10);
 	}
 
 	private static readonly Point[] s_richData = Point.CreatePoints(
@@ -92,7 +92,7 @@ public class KnnTests
 			{ 4, 2, 4, 2 }, { 2, 4, 2, 4 }, { 5, 3, 5, 3 },
 		});
 
-	[Fact]
+	[Test]
 	public void FindNeighborsThatSatisfyAGivenPredicate()
 	{
 		var bush = new RBush<Point>();

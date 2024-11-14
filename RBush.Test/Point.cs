@@ -1,17 +1,14 @@
-﻿namespace RBush.Test;
+namespace RBush.Test;
 
-internal sealed class Point : ISpatialData, IEquatable<Point>
+internal sealed class Point(double minX, double minY, double maxX, double maxY) : ISpatialData, IEquatable<Point>
 {
-	private readonly Envelope _envelope;
-
-	public Point(double minX, double minY, double maxX, double maxY)
-	{
-		_envelope = new Envelope(
+	private readonly Envelope _envelope =
+		new(
 			MinX: minX,
 			MinY: minY,
 			MaxX: maxX,
-			MaxY: maxY);
-	}
+			MaxY: maxY
+		);
 
 	public ref readonly Envelope Envelope => ref _envelope;
 
