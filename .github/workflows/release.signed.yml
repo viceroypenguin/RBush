@@ -1,0 +1,41 @@
+name: Release
+
+on: 
+  workflow_dispatch:
+  push:
+    tags:
+      - '**'
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: |
+          8.0.x
+
+    - name: Materialize Signing Key
+      id: write_sign_key_file
+      uses: timheuer/base64-to-file@v1
+      with:
+        fileName: 'MyKeys.snk'
+        encodedString: ${{ secrets.SIGNING_KEY }}
+
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build -c Release --no-restore
+
+    - name: Package 
+      run: dotnet pack -c Release --no-build --property:PackageOutputPath=../nupkgs
+    - name: Push to Nuget
+      run: dotnet nuget push "./nupkgs/*.nupkg" --source "https://api.nuget.org/v3/index.json" --api-key ${{ secrets.NUGETPUBLISHKEY }}

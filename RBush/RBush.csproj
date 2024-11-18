@@ -23,14 +23,14 @@
 	<GenerateDocumentationFile>true</GenerateDocumentationFile>
   </PropertyGroup>
 
-  <ItemGroup>
-	<None Include="..\readme.md" Pack="true" PackagePath="\" />
-  </ItemGroup>
+  <PropertyGroup Label="Signing" Condition="Exists('../MyKeys.snk')">
+	<SignAssembly>true</SignAssembly>
+	<AssemblyOriginatorKeyFile>../MyKeys.snk</AssemblyOriginatorKeyFile>
+	<PackageId>RBush.Signed</PackageId>
+  </PropertyGroup>
 
   <ItemGroup>
-	<AssemblyAttribute Include="System.Runtime.CompilerServices.InternalsVisibleTo">
-	  <_Parameter1>RBush.Test</_Parameter1>
-	</AssemblyAttribute>
+	<None Include="..\readme.md" Pack="true" PackagePath="\" />
   </ItemGroup>
 
   <ItemGroup>
