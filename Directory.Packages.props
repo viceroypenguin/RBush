@@ -11,7 +11,7 @@
 	<PackageVersion Include="Microsoft.SourceLink.GitHub" Version="8.0.0" />
 	<PackageVersion Include="MinVer" Version="6.0.0" />
 	<PackageVersion Include="TUnit.Engine" Version="0.2.212" />
-	<PackageVersion Include="xunit.v3.assert" Version="0.5.0-pre.27" />
+	<PackageVersion Include="xunit.v3.assert" Version="1.0.0" />
   </ItemGroup>
   
   <ItemGroup>
