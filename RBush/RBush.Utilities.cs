@@ -43,6 +43,49 @@ public partial class RBush<T>
 
 		return intersections;
 	}
+
+	// Inner nodes are pruned with Intersects, not Contains: a node's envelope is the
+	// union of its children, so it can be larger than the box while some of its
+	// children are still inside it. Contains is only the test for the items.
+	// When a node lies wholly inside the box, all of its items do, so they are
+	// added without testing each one.
+	private List<T> DoSearchContained(in Envelope boundingBox)
+	{
+		var contained = new List<T>();
+		if (!Root.Envelope.Intersects(boundingBox))
+			return contained;
+
+		var queue = new Queue<Node>();
+		queue.Enqueue(Root);
+
+		while (queue.Count != 0)
+		{
+			var node = queue.Dequeue();
+
+			if (boundingBox.Contains(node.Envelope))
+			{
+				_ = GetAllChildren(contained, node);
+			}
+			else if (node.IsLeaf)
+			{
+				foreach (var i in node.Items)
+				{
+					if (boundingBox.Contains(i.Envelope))
+						contained.Add((T)i);
+				}
+			}
+			else
+			{
+				foreach (var i in node.Items)
+				{
+					if (i.Envelope.Intersects(boundingBox))
+						queue.Enqueue((Node)i);
+				}
+			}
+		}
+
+		return contained;
+	}
 	#endregion
 
 	#region Insert

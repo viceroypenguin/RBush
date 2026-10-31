@@ -96,6 +96,22 @@ public partial class RBush<T> : ISpatialDatabase<T>, ISpatialIndex<T> where T : 
 		DoSearch(boundingBox);
 
 	/// <summary>
+	/// Get the elements from this <see cref="RBush{T}"/> whose envelope lies
+	/// completely inside the <paramref name="boundingBox"/> bounding box.
+	/// </summary>
+	/// <remarks>
+	/// <see cref="Search(in Envelope)"/> returns every element that touches the
+	/// box; this method returns only those that are entirely within it. The order
+	/// of the results is not specified.
+	/// </remarks>
+	/// <param name="boundingBox">The area that must contain the elements.</param>
+	/// <returns>
+	/// A list of the elements whose envelopes are contained by the bounding box.
+	/// </returns>
+	public IReadOnlyList<T> SearchContained(in Envelope boundingBox) =>
+		DoSearchContained(boundingBox);
+
+	/// <summary>
 	/// Adds an object to the <see cref="RBush{T}"/>
 	/// </summary>
 	/// <param name="item">

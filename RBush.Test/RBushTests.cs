@@ -495,4 +495,81 @@ public class RBushTests
 			expected: tree.Search().Count(p => p.Envelope.Intersects(envelope)),
 			actual: tree.Search(envelope).Count);
 	}
+
+	[Test]
+	[Arguments(9)]
+	[Arguments(4)]
+	public void SearchContainedMatchesBruteForce(int maxEntries)
+	{
+		var rng = new Random(77);
+		var points = Enumerable.Range(0, 2000)
+			.Select(_ =>
+			{
+				var x = rng.Next(0, 500);
+				var y = rng.Next(0, 500);
+				return new Point(x, y, x + rng.Next(0, 40), y + rng.Next(0, 40));
+			})
+			.ToArray();
+
+		// one tree built by bulk load, one by inserts, so both tree shapes are covered
+		var bulk = new RBush<Point>(maxEntries);
+		bulk.BulkLoad(points);
+		var inserted = new RBush<Point>(maxEntries);
+		foreach (var p in points)
+			inserted.Insert(p);
+
+		for (var q = 0; q < 200; q++)
+		{
+			var x = rng.Next(-20, 500);
+			var y = rng.Next(-20, 500);
+			var box = new Envelope(x, y, x + rng.Next(0, 300), y + rng.Next(0, 300));
+			var expected = points.Where(p => box.Contains(p.Envelope)).ToHashSet();
+
+			var fromBulk = bulk.SearchContained(box);
+			var fromInserted = inserted.SearchContained(box);
+
+			Assert.Equal(expected.Count, fromBulk.Count);
+			Assert.True(expected.SetEquals(fromBulk));
+			Assert.Equal(expected.Count, fromInserted.Count);
+			Assert.True(expected.SetEquals(fromInserted));
+		}
+	}
+
+	[Test]
+	public void SearchContainedExcludesItemsThatOnlyOverlap()
+	{
+		var inside = new Point(2, 2, 4, 4);
+		var straddling = new Point(8, 8, 12, 12);
+		var outside = new Point(20, 20, 21, 21);
+		var tree = new RBush<Point>();
+		tree.BulkLoad([inside, straddling, outside]);
+
+		var box = new Envelope(0, 0, 10, 10);
+
+		Assert.Equal(2, tree.Search(box).Count);
+		Assert.Equal([inside], tree.SearchContained(box));
+	}
+
+	[Test]
+	public void SearchContainedIncludesItemsOnTheBoundary()
+	{
+		var onEdge = new Point(0, 0, 10, 10);
+		var tree = new RBush<Point>();
+		tree.Insert(onEdge);
+
+		Assert.Equal([onEdge], tree.SearchContained(new Envelope(0, 0, 10, 10)));
+	}
+
+	[Test]
+	public void SearchContainedReturnsEmptyForEmptyTree() =>
+		Assert.Empty(new RBush<Point>().SearchContained(Envelope.InfiniteBounds));
+
+	[Test]
+	public void SearchContainedWithInfiniteBoundsReturnsEverything()
+	{
+		var tree = new RBush<Point>();
+		tree.BulkLoad(s_points);
+
+		Assert.Equal(s_points.Length, tree.SearchContained(Envelope.InfiniteBounds).Count);
+	}
 }
